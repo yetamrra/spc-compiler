@@ -12,6 +12,7 @@ options {
 tokens {
 	FUNCTION;
 	ARG_LIST;
+        BLOCK;
 }
 
 @members {
@@ -122,11 +123,12 @@ UNICODE_ESC
  *******************************************************/
  
  
-program :	functionList EOF! { System.out.println($functionList.tree.toStringTree()); } ;
+program
+	:	functionList EOF! ;
 
 functionList 
-	:	functionDefBare { System.out.println($functionDefBare.tree.toStringTree()); } functionList?
-	|	functionDefArgs { System.out.println($functionDefArgs.tree.toStringTree()); } functionList?
+	:	functionDefBare functionList?
+	|	functionDefArgs functionList?
 	;
 
 expr 	:	assignment
@@ -140,16 +142,16 @@ rvalue 	:	INT | FLOAT | STRING | ID;
 
 functionDefBare 
 	:	FUNC_DEF ID NO_ARGS AS functionBody FUNC_END { System.out.println("Function " + $ID.text + "()"); }
-	->	^(FUNCTION ID)
+	->	^(FUNCTION ID functionBody)
 	;
 	
 functionDefArgs
 	:	FUNC_DEF ID WITH_ARGS argList AS functionBody FUNC_END { System.out.println("Function " + $ID.text + "(" + $argList.text + ")"); }
-	->	^(FUNCTION ID)
+	->	^(FUNCTION ID argList functionBody)
 	;
 	
 functionBody 
-	:	expr+
+	:	expr+ -> ^(BLOCK expr+)
 	;
 	
 argList :	ID ( AND ID )* -> ^(ARG_LIST ID+)

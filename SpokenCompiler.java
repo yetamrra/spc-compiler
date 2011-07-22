@@ -17,6 +17,7 @@ public class SpokenCompiler
 
         // Parse input into AST
         String inName = args[0];
+	String className = inName.replaceAll("\\.spk$","");
 	ANTLRFileStream input = new ANTLRFileStream( inName );
 	SpokenLangLexer lexer = new SpokenLangLexer( input );
 	CommonTokenStream tokens = new CommonTokenStream( lexer );
@@ -30,7 +31,7 @@ public class SpokenCompiler
 	nodes.setTokenStream( tokens );
 	SLJavaEmitter emitter = new SLJavaEmitter( nodes );
 	emitter.setTemplateLib( templates );
-	SLJavaEmitter.program_return strTmpl = emitter.program();
+	SLJavaEmitter.program_return strTmpl = emitter.program( className );
 
 	// Produce intermediate output into java file
         // FIXME: write to tmp file instead of hardcoded name
@@ -43,6 +44,14 @@ public class SpokenCompiler
         // Run the Java compiler on the intermediate file
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         int results = compiler.run( null, null, null, outName );
-        System.out.println( "Success: " + (results == 0) );
+
+	// Remove the intermediate file if the compile succeeded
+	if ( results == 0 ) {
+	    File f = new File( outName );
+	    f.delete();
+	} else {
+	    System.err.println( "Compile failed.  Intermediate file in " + outName );
+	    System.exit( 1 );
+	}
     }
 }

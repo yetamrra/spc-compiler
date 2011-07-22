@@ -21,8 +21,11 @@ function(name) ::=
 <<
 void <name>()
 {
-    // Code goes here
     System.out.println("Entered function <name>");
+    // Code goes here
+    System.out.println("Leaving function <name>");
 }
 
 >>
+
+assign(name,value) ::= "<name> = <value>;"

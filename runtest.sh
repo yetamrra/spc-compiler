@@ -9,4 +9,6 @@ class=${input%.spk}
 output=$class.java
 
 java -cp antlrworks-1.4.2.jar:. SpokenCompiler "$input"
-java $class
+if [ $? = 0 ]; then
+    java $class
+fi
