@@ -1,0 +1,28 @@
+group SLJavaEmitter;
+
+program(name,fList) ::=
+<<
+public class <name>
+{
+    static class SpokenProgram
+    {
+        <fList>
+    }
+
+    public static void main( String args[] ) throws Exception
+    {
+        SpokenProgram p = new SpokenProgram();
+        p.main();
+    }
+}
+>>
+
+function(name) ::= 
+<<
+void <name>()
+{
+    // Code goes here
+    System.out.println("Entered function <name>");
+}
+
+>>
