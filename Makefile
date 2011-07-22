@@ -1,4 +1,4 @@
-CLASSPATH=$(HOME)/Download/antlrworks-1.4.2.jar:.
+CLASSPATH=antlrworks-1.4.2.jar:.
 ANTLRFLAGS=
 
 %.class : %.java
