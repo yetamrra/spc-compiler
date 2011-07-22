@@ -1,0 +1,7 @@
+syntax: glob
+SpokenLangLexer.java
+SpokenLangParser.java
+*.tokens
+SLJavaEmitter.java
+hello.java
+*.class
