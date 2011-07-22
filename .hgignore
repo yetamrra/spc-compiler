@@ -5,3 +5,4 @@ SpokenLangParser.java
 SLJavaEmitter.java
 hello.java
 *.class
+.*.swp

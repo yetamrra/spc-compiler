@@ -2,6 +2,9 @@ import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;
 import org.antlr.stringtemplate.*;
 import java.io.*;
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
+
 
 public class SpokenCompiler
 {
@@ -13,7 +16,8 @@ public class SpokenCompiler
 	tr.close();
 
         // Parse input into AST
-	ANTLRFileStream input = new ANTLRFileStream( args[0] );
+        String inName = args[0];
+	ANTLRFileStream input = new ANTLRFileStream( inName );
 	SpokenLangLexer lexer = new SpokenLangLexer( input );
 	CommonTokenStream tokens = new CommonTokenStream( lexer );
 	SpokenLangParser parser = new SpokenLangParser( tokens );
@@ -28,14 +32,17 @@ public class SpokenCompiler
 	emitter.setTemplateLib( templates );
 	SLJavaEmitter.program_return strTmpl = emitter.program();
 
-	// Produce output
+	// Produce intermediate output into java file
+        // FIXME: write to tmp file instead of hardcoded name
 	StringTemplate output = (StringTemplate)strTmpl.getTemplate();
-        if ( args.length > 2 && args[1].equals("-o")) {
-            FileWriter outFile = new FileWriter( args[2] );
-            outFile.write( output.toString() );
-            outFile.close();
-        } else {
-            System.out.println( output.toString() );
-        }
+        String outName = inName.replaceAll( "\\.spk$", ".java" );
+        FileWriter outFile = new FileWriter( outName );
+        outFile.write( output.toString() );
+        outFile.close();
+
+        // Run the Java compiler on the intermediate file
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        int results = compiler.run( null, null, null, outName );
+        System.out.println( "Success: " + (results == 0) );
     }
 }
