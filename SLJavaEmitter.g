@@ -7,15 +7,19 @@ options {
 }
 
 program [String name]
-	:	f+=function* -> program(fList={$f},name={$name}) ;
+	:	f+=function+ { System.out.println("func"); } -> program(fList={$f},name={$name}) ;
 
 function
-	:	^(FUNCTION ID ARG_LIST? functionBody) -> function(name={$ID.text},body={$functionBody.st})
-	//|	^(FUNCTION ID  functionBody) -> function(name={$ID.text},args="",body={$functionBody})
+	:	^(FUNCTION ID argList functionBody) { System.out.println("Here"); } -> function(name={$ID.text},body={$functionBody.st})
+	|	^(FUNCTION ID functionBody) { System.out.println("Here2"); } -> function(name={$ID.text},body={$functionBody.st})
+	;
+
+argList
+	:	^(ARG_LIST args+=ID+)
 	;
 
 functionBody
-        :       expr+
+        :       ^(BLOCK el+=expr+)
         ;
 
 expr    :       assignment
@@ -25,4 +29,8 @@ assignment
         :       ^(ASSIGN ID rvalue) -> assign(name={$ID.text},value={$rvalue.st})
         ;
 
-rvalue  :       INT | FLOAT | STRING | ID;
+rvalue  :       INT
+        |       FLOAT 
+        |       STRING 
+        |       ID
+        ;

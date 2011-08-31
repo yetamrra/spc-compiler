@@ -17,12 +17,13 @@ public class <name>
 }
 >>
 
-function(name) ::= 
+function(name,body) ::= 
 <<
 void <name>()
 {
     System.out.println("Entered function <name>");
     // Code goes here
+    <body>
     System.out.println("Leaving function <name>");
 }
 
