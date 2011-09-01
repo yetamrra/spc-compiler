@@ -6,7 +6,7 @@ public class <name>
 {
     static class SpokenProgram
     {
-        <fList>
+        <fList; separator="\n">
     }
 
     public static void main( String args[] ) throws Exception
@@ -17,16 +17,32 @@ public class <name>
 }
 >>
 
-function(name,body) ::= 
+function(name,args,body) ::= 
 <<
-void <name>()
+void <name>(<args>)
 {
     System.out.println("Entered function <name>");
-    // Code goes here
     <body>
     System.out.println("Leaving function <name>");
 }
 
 >>
 
-assign(name,value) ::= "<name> = <value>;"
+assign(name,value) ::= "int <name> = <value>;"
+
+block(body) ::=
+<<
+{
+    <body; separator="\n">
+}
+>>
+
+arglist(args) ::= "<args; separator=\", \">"
+
+string_constant(text) ::= "\"<text>\""
+
+int_constant(val) ::= "<val>"
+
+float_constant(val) ::= "<val>"
+
+ident(name) ::= "<name>"
