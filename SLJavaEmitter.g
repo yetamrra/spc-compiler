@@ -6,12 +6,34 @@ options {
     output=template;
 }
 
+scope VarScope {
+    SymbolTable symbols;
+    String name;
+}
+
 program [String name]
+scope VarScope;
+@init {
+    // Set up the global scope
+    $VarScope::symbols = new SymbolTable();
+    $VarScope::name = "global";
+}
+@after {
+    System.out.println( "Global symbols: " + $VarScope::symbols );
+}
 	:	f+=function+ { System.out.println("func"); } -> program(fList={$f},name={$name}) ;
 
 function
-	:	^(FUNCTION ID argList functionBody)	-> function(name={$ID.text},args={$argList.st},body={$functionBody.st})
-	|	^(FUNCTION ID functionBody)		-> function(name={$ID.text},body={$functionBody.st})
+scope VarScope;
+@init {
+    // Set up the global scope
+    $VarScope::symbols = new SymbolTable();
+}
+@after {
+    System.out.println( "Symbols from " + $VarScope::name + ": " + $VarScope::symbols );
+}
+	:	^(FUNCTION ID argList functionBody)	{ $VarScope::name = $ID.text; } -> function(name={$ID.text},args={$argList.st},body={$functionBody.st})
+	|	^(FUNCTION ID functionBody)		{ $VarScope::name = $ID.text; } -> function(name={$ID.text},body={$functionBody.st})
 	;
 
 argList
@@ -26,7 +48,7 @@ expr    :       assignment -> {$assignment.st}
         ;
 
 assignment
-        :       ^(ASSIGN ID rvalue) -> assign(name={$ID.text},value={$rvalue.st})
+        :       ^(ASSIGN ID rvalue) { $VarScope::symbols.add($ID.text); } -> assign(name={$ID.text},value={$rvalue.st})
         ;
 
 rvalue  :       INT		-> int_constant(val={$INT.text})
