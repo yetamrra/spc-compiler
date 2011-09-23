@@ -3,5 +3,10 @@ enum VarType
     UNKNOWN,
     INT,
     FLOAT,
-    STRING,
+    STRING;
+
+	public String toString()
+	{
+		return "int";
+	}
 };

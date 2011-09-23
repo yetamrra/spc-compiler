@@ -17,10 +17,11 @@ public class <name>
 }
 >>
 
-function(name,args,body) ::= 
+function(name,params,body,locals) ::= 
 <<
-void <name>(<args>)
+void <name>(<params:arglist(args=params.st)>)
 {
+	<locals:declarations(vars=locals.st)>
     System.out.println("Entered function <name>");
     <body>
     System.out.println("Leaving function <name>");
@@ -28,7 +29,7 @@ void <name>(<args>)
 
 >>
 
-assign(name,value) ::= "int <name> = <value>;"
+assign(name,value) ::= "<name> = <value>;"
 
 block(body) ::=
 <<
@@ -36,6 +37,8 @@ block(body) ::=
     <body; separator="\n">
 }
 >>
+
+declarations(vars) ::= "<vars; separator=\";\n\">;"
 
 arglist(args) ::= "<args; separator=\", \">"
 

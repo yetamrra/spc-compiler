@@ -32,12 +32,19 @@ scope VarScope;
 @after {
     System.out.println( "Symbols from " + $VarScope::name + ": " + $VarScope::symbols );
 }
-	:	^(FUNCTION ID argList functionBody)	{ $VarScope::name = $ID.text; } -> function(name={$ID.text},args={$argList.st},body={$functionBody.st})
-	|	^(FUNCTION ID functionBody)		{ $VarScope::name = $ID.text; } -> function(name={$ID.text},body={$functionBody.st})
+	:	^(FUNCTION ID argList functionBody)	{ $VarScope::name = $ID.text; } -> function(name={$ID.text},params={$argList.st},body={$functionBody.st},locals={$VarScope::symbols})
+	|	^(FUNCTION ID functionBody)		{ $VarScope::name = $ID.text; } -> function(name={$ID.text},body={$functionBody.st},locals={$VarScope::symbols})
 	;
 
 argList
-	:	^(ARG_LIST args+=ID+) -> arglist(args={$args})
+scope VarScope;
+@init {
+    $VarScope::symbols = new SymbolTable();
+}
+@after {
+    System.out.println( "Symbols from function args: " + $VarScope::symbols );
+}
+	:	^(ARG_LIST args+=(ID { $VarScope::symbols.add($ID.text); })+ ) -> arglist(args={$VarScope::symbols.getSt()})
 	;
 
 functionBody

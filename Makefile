@@ -6,7 +6,7 @@ ANTLRFLAGS=
 
 all: SpokenCompiler.class
 
-SpokenCompiler.class: VarType.class SymbolTable.class SpokenLangLexer.class SpokenLangParser.class SLJavaEmitter.class
+SpokenCompiler.class: VarType.class SymbolTable.class SpokenLangLexer.class SpokenLangParser.class SLJavaEmitter.class SymEntry.class
 
 SpokenLangLexer.java SpokenLangParser.java: SpokenLang.g
 	java -cp $(CLASSPATH) org.antlr.Tool $(ANTLRFLAGS) SpokenLang.g
