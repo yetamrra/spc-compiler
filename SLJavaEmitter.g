@@ -48,17 +48,23 @@ scope VarScope;
 	;
 
 functionBody
-        :       ^(BLOCK el+=expr+) -> block(body={$el})
+        :       ^(BLOCK el+=stmt+) -> block(body={$el})
         ;
 
-expr    :       assignment -> {$assignment.st}
+stmt    
+	:       assignment -> {$assignment.st}
+	|	printStmt -> {$printStmt.st}
         ;
+
+printStmt
+	:	^(PRINT expr) -> printOut(string={$expr.st})
+	;
 
 assignment
-        :       ^(ASSIGN ID rvalue) { $VarScope::symbols.add($ID.text); } -> assign(name={$ID.text},value={$rvalue.st})
+        :       ^(ASSIGN ID expr) { $VarScope::symbols.add($ID.text); } -> assign(name={$ID.text},value={$expr.st})
         ;
 
-rvalue  :       INT		-> int_constant(val={$INT.text})
+expr	:       INT		-> int_constant(val={$INT.text})
         |       FLOAT 		-> float_constant(val={$FLOAT.text})
         |       STRING		-> string_constant(text={$STRING.text})
         |       ID		-> ident(name={$ID.text})

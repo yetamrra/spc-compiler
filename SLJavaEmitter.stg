@@ -40,6 +40,8 @@ block(body) ::=
 
 declarations(vars) ::= "<vars; separator=\";\n\">;"
 
+printOut(string) ::= "System.out.print( <string> );"
+
 arglist(args) ::= "<args; separator=\", \">"
 
 string_constant(text) ::= "\"<text>\""

@@ -5,4 +5,5 @@ end function
 
 define function main taking no arguments as
     set X to 10
+	print X
 end function

@@ -35,6 +35,8 @@ tokens {
     }
 }
 
+PRINT : 'print' ;
+
 ASSIGN 	:	'set' ;
 TO 	:	'to' ;
 
@@ -131,14 +133,21 @@ functionList
 	|	functionDefArgs functionList?
 	;
 
-expr 	:	assignment
+stmt 	
+	:	printStmt
+	|	assignment
 	;
 
 assignment 
-	:	ASSIGN ID TO rvalue -> ^(ASSIGN ID rvalue)
+	:	ASSIGN ID TO expr -> ^(ASSIGN ID expr)
 	;
 
-rvalue 	:	INT | FLOAT | STRING | ID;
+printStmt
+	:	PRINT expr -> ^(PRINT expr)
+	;
+
+expr
+	:	INT | FLOAT | STRING | ID;
 
 functionDefBare 
 	:	FUNC_DEF ID NO_ARGS AS functionBody FUNC_END { System.out.println("Function " + $ID.text + "()"); }
@@ -151,7 +160,7 @@ functionDefArgs
 	;
 	
 functionBody 
-	:	expr+ -> ^(BLOCK expr+)
+	:	stmt+ -> ^(BLOCK stmt+)
 	;
 	
 argList :	ID ( AND ID )* -> ^(ARG_LIST ID+)
