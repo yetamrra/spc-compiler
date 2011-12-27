@@ -1,8 +1,5 @@
 define function f taking arguments Q and Z as
     set X to 5
-	while X > 0 do
-	    print 2 * X
-	end
     set Y to Z
 end function
 

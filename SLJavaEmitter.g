@@ -54,8 +54,12 @@ functionBody
 stmt    
 	:       assignment -> {$assignment.st}
 	|	printStmt -> {$printStmt.st}
+	|	whileStmt -> {$whileStmt.st}
         ;
 
+whileStmt
+	:	^(WHILE boolExpr functionBody) -> while(guard={$boolExpr.st},body={$functionBody.st}) ;
+	
 printStmt
 	:	^(PRINT expr) -> printOut(string={$expr.st})
 	;
@@ -64,7 +68,20 @@ assignment
         :       ^(ASSIGN ID expr) { $VarScope::symbols.add($ID.text); } -> assign(name={$ID.text},value={$expr.st})
         ;
 
-expr	:       INT		-> int_constant(val={$INT.text})
+boolExpr
+	:	^(o=CMPOP e1=expr e2=expr) -> expr(e1={$e1.st},e2={$e2.st},op={$o.text})
+	;
+
+expr
+	:	^(EXPR '+' e=expr e2=expr) -> expr(e1={$e.st},e2={$e2.st},op={"+"})
+	|	^(EXPR '-' e=expr e2=expr) -> expr(e1={$e.st},e2={$e2.st},op={"-"})
+	|	^(EXPR '*' e=expr e2=expr) -> expr(e1={$e.st},e2={$e2.st},op={"*"})
+	|	^(EXPR '/' e=expr e2=expr) -> expr(e1={$e.st},e2={$e2.st},op={"/"})
+	|	^(EXPR atom) -> {$atom.st}
+	;
+
+
+atom	:       INT		-> int_constant(val={$INT.text})
         |       FLOAT 		-> float_constant(val={$FLOAT.text})
         |       STRING		-> string_constant(text={$STRING.text})
         |       ID		-> ident(name={$ID.text})

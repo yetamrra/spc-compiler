@@ -13,6 +13,7 @@ tokens {
 	FUNCTION;
 	ARG_LIST;
         BLOCK;
+	EXPR;
 }
 
 @members {
@@ -70,6 +71,10 @@ AS	:	'as' ;
 
 fragment
 END 	:	'end' ;
+
+
+WHILE_END
+	:	END WS WHILE ;
 
 FUNC_END 
 	:	END WS FUNCTION ;
@@ -158,7 +163,7 @@ printStmt
 	;
 
 whileStmt
-	:	WHILE boolExpr DO functionBody END
+	:	WHILE boolExpr DO functionBody WHILE_END
 	->  ^(WHILE boolExpr functionBody)
 	;
 
@@ -168,11 +173,21 @@ boolExpr
 	;
 
 expr
-	:	atom
-	|	expr '*' expr
-	|	expr '/' expr
-	|	expr '+' expr
-	|	expr '-' expr
+	:	multExpr '+' multExpr
+	->	^(EXPR '+' multExpr multExpr)
+	|	multExpr '-' multExpr
+	->	^(EXPR '-' multExpr multExpr)
+	|	multExpr
+	->	multExpr
+	;
+
+multExpr
+	:	atom '*' atom
+	->	^(EXPR '*' ^(EXPR atom) ^(EXPR atom))
+	|	atom '/' atom
+	->	^(EXPR '/' ^(EXPR atom) ^(EXPR atom))
+	|	atom
+	->	^(EXPR atom)
 	;
 
 atom

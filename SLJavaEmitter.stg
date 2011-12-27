@@ -51,3 +51,11 @@ int_constant(val) ::= "<val>"
 float_constant(val) ::= "<val>"
 
 ident(name) ::= "<name>"
+
+expr(e1,e2,op) ::= "(<e1>) <op> (<e2>)"
+
+while(guard,body) ::=
+<<
+while ( <guard> )
+<body:block(body=body)>
+>>
