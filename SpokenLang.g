@@ -37,6 +37,10 @@ tokens {
 
 PRINT : 'print' ;
 
+WHILE : 'while' ;
+
+DO : 'do' ;
+
 ASSIGN 	:	'set' ;
 TO 	:	'to' ;
 
@@ -120,6 +124,12 @@ UNICODE_ESC
     :   '\\' 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT
     ;
 
+CMPOP
+	:	'<'
+	|	'>'
+	|	'='
+	;
+
 /*******************************************************
  ** End of Lexer Grammar 
  *******************************************************/
@@ -136,6 +146,7 @@ functionList
 stmt 	
 	:	printStmt
 	|	assignment
+	|   whileStmt
 	;
 
 assignment 
@@ -146,8 +157,26 @@ printStmt
 	:	PRINT expr -> ^(PRINT expr)
 	;
 
+whileStmt
+	:	WHILE boolExpr DO functionBody END
+	->  ^(WHILE boolExpr functionBody)
+	;
+
+boolExpr
+	:	expr CMPOP expr
+	->  ^(CMPOP expr expr)
+	;
+
 expr
-	:	INT | FLOAT | STRING | ID;
+	:	atom
+	|	expr '*' expr
+	|	expr '/' expr
+	|	expr '+' expr
+	|	expr '-' expr
+	;
+
+atom
+	:	INT | FLOAT | STRING | ID ;
 
 functionDefBare 
 	:	FUNC_DEF ID NO_ARGS AS functionBody FUNC_END { System.out.println("Function " + $ID.text + "()"); }
