@@ -47,7 +47,7 @@ enterFunction
 			if ( chk != null ) {
 				throw new CompileException( "Duplicate definition of " + $ID.text );
 			}
-			SymEntry sym = new SymEntry( $ID.text, VarType.UNKNOWN, currentScope );
+			SymEntry sym = new SymEntry( $ID.text, VarType.FUNCTION, currentScope );
 			sym.definition = $ID;
 			$ID.symbol = sym;
 			currentScope.define( sym );

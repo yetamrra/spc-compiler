@@ -6,9 +6,4 @@ enum VarType
     , STRING
     , FUNCTION
     ;
-
-	public String toString()
-	{
-		return "int";
-	}
 };

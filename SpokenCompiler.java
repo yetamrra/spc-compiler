@@ -42,7 +42,7 @@ public class SpokenCompiler
 	        def.downup(t);                          // Do pass 1
 	        System.out.println("globals: "+symTree);
 	        nodes.reset(); // rewind AST node stream to root
-	        //Ref ref = new Ref(nodes);               // create Ref phase
+	        //Ref ref = new Ref(nodes);               // Pass 2 - resolve references
 	        //ref.downup(t);                          // Do pass 2
 
 	        System.exit( 1 );

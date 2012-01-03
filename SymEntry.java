@@ -14,10 +14,6 @@ class SymEntry
 	
 	public String toString()
 	{
-		if ( scope == null ) {
-			return name;
-		} else {
-			return name;
-		}
+		return name + "<" + varType + ">"; 
 	}
 }
