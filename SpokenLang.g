@@ -5,35 +5,20 @@ options {
   output = AST;
   
   // Java type of the tree
-  ASTLabelType = CommonTree;
+  ASTLabelType = SLTreeNode;
 }
 // These are imaginary tokens that will serve as parent nodes
 // for grouping other tokens in our AST.
 tokens {
 	FUNCTION;
 	ARG_LIST;
-        BLOCK;
+    BLOCK;
 	EXPR;
+	PRINTLN;
 }
 
 @members {
-    public static void main(String[] args) throws Exception {
-        if (args.length < 1) {
-            System.err.println( "Usage: SpokenLangParser file.spk" );
-            return;
-        }
-
-        SpokenLangLexer lex = new SpokenLangLexer(new ANTLRFileStream(args[0]));
-       	CommonTokenStream tokens = new CommonTokenStream(lex);
-
-        SpokenLangParser parser = new SpokenLangParser(tokens);
-
-        try {
-            parser.program();
-        } catch (RecognitionException e)  {
-            e.printStackTrace();
-        }
-    }
+	Scope currentScope;
 }
 
 PRINT : 'print' ;
@@ -68,6 +53,18 @@ WITH_ARGS
 	:	TAKING WS ARGUMENTS ;
 	
 AS	:	'as' ;
+
+CALL	:	'call' ;
+
+WITH	:	'with' ;
+
+fragment
+NEW	:	'new' ;
+
+fragment
+LINE	:	'line' ;
+
+NEW_LINE :	NEW WS LINE ;
 
 fragment
 END 	:	'end' ;
@@ -151,7 +148,8 @@ functionList
 stmt 	
 	:	printStmt
 	|	assignment
-	|   whileStmt
+	|	whileStmt
+	|	callStmt
 	;
 
 assignment 
@@ -160,11 +158,17 @@ assignment
 
 printStmt
 	:	PRINT expr -> ^(PRINT expr)
+	|	NEW_LINE -> ^(PRINTLN)
 	;
 
 whileStmt
 	:	WHILE boolExpr DO functionBody WHILE_END
 	->  ^(WHILE boolExpr functionBody)
+	;
+
+callStmt
+	:	CALL ID (WITH expr (AND expr)*)?
+	->	^(CALL ID expr*)
 	;
 
 boolExpr

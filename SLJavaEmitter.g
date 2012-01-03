@@ -15,7 +15,7 @@ program [String name]
 scope VarScope;
 @init {
     // Set up the global scope
-    $VarScope::symbols = new SymbolTable();
+    //$VarScope::symbols = new SymbolTable();
     $VarScope::name = "global";
 }
 @after {
@@ -27,7 +27,7 @@ function
 scope VarScope;
 @init {
     // Set up the global scope
-    $VarScope::symbols = new SymbolTable();
+    //$VarScope::symbols = new SymbolTable();
 }
 @after {
     System.out.println( "Symbols from " + $VarScope::name + ": " + $VarScope::symbols );
@@ -39,12 +39,12 @@ scope VarScope;
 argList
 scope VarScope;
 @init {
-    $VarScope::symbols = new SymbolTable();
+    //$VarScope::symbols = new SymbolTable();
 }
 @after {
     System.out.println( "Symbols from function args: " + $VarScope::symbols );
 }
-	:	^(ARG_LIST args+=(ID { $VarScope::symbols.add($ID.text); })+ ) -> arglist(args={$VarScope::symbols.getSt()})
+	:	^(ARG_LIST args+=(ID { /*$VarScope::symbols.add($ID.text);*/ })+ ) -> arglist(args={$VarScope::symbols.getSt()})
 	;
 
 functionBody
@@ -71,7 +71,7 @@ callStmt
 	;
 
 assignment
-        :       ^(ASSIGN ID expr) { $VarScope::symbols.add($ID.text); } -> assign(name={$ID.text},value={$expr.st})
+        :       ^(ASSIGN ID expr) { /*$VarScope::symbols.add($ID.text);*/ } -> assign(name={$ID.text},value={$expr.st})
         ;
 
 boolExpr

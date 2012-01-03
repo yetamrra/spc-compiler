@@ -1,9 +1,16 @@
 define function f taking arguments Q and Z as
-    set X to 5
-    set Y to Z
+    set X to Q
+    while X < Z do
+        set Y to 2 * X
+        print Y
+        new line
+        set X to X + 1
+    end while
 end function
 
 define function main taking no arguments as
     set X to 10
-	print X
+    print X
+    new line
+    call f with 0 and 10
 end function

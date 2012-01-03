@@ -1,9 +1,11 @@
 enum VarType
 {
-    UNKNOWN,
-    INT,
-    FLOAT,
-    STRING;
+    UNKNOWN
+    , INT
+    , FLOAT
+    , STRING
+    , FUNCTION
+    ;
 
 	public String toString()
 	{

@@ -1,30 +1,24 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Map;
 
-class SymbolTable
+class SymbolTable implements Scope
 {
-    private HashMap<String,SymEntry> symbols;
+    private Map<String,SymEntry> symbols;
+    Scope parentScope;
+    String name;
 
-    public SymbolTable()
+    public SymbolTable( Scope parent, String name )
     {
-        symbols = new HashMap();
-        System.out.println( "Created SymbolTable" );
+    	parentScope = parent;
+    	this.name = name;
+        symbols = new HashMap<String,SymEntry>();
+        System.out.println( "Created SymbolTable " + name + (parent == null ? "" : " inside parent " + parent.getScopeName()) );
     }
 
-	public void add( String name )
-	{
-		add( name, VarType.INT );
-	}
-
-    public void add( String name, VarType theType )
-    {
-		add( name, theType, true );
-    }
-
-	public void add( String name, VarType theType, boolean declare )
+	/*
+	public void add( String name, SymEntry theType, boolean declare )
 	{
 	    String key = name.toUpperCase();
         if ( symbols.containsKey(key) ) {
@@ -41,7 +35,7 @@ class SymbolTable
 			e.needsDeclaration = declare;
 			symbols.put( key, e );
 		}
-	}
+	}*/
 
 	public String toString()
 	{
@@ -57,5 +51,36 @@ class SymbolTable
 			//}
 		}
 		return retVal;
+	}
+
+	@Override
+	public String getScopeName() {
+		if ( getParentScope() == null ) {
+			return name;
+		} else {
+			return getParentScope().getScopeName() + "::" + name;
+		}
+	}
+
+	@Override
+	public Scope getParentScope() {
+		return parentScope;
+	}
+
+	@Override
+	public void define(SymEntry sym) {
+		String name = sym.name.toUpperCase();
+		symbols.put( name, sym );
+		sym.scope = this;
+	}
+
+	@Override
+	public SymEntry resolve(String name, boolean localOnly ) {
+		String key = name.toUpperCase();
+		SymEntry s = symbols.get( key );
+		if ( !localOnly && s == null && getParentScope() != null ) {
+			s = getParentScope().resolve( name, false );
+		}
+		return s;
 	}
 }
