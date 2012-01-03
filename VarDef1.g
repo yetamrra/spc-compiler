@@ -45,7 +45,7 @@ enterFunction
 			// Make a symbol entry for the function.
 			SymEntry chk = currentScope.resolve( $ID.text, true );
 			if ( chk != null ) {
-				throw new CompileException( "Duplicate definition of " + $ID.text );
+				throw new CompileException( "Duplicate definition of " + $ID.text + " at line " + $ID.line );
 			}
 			SymEntry sym = new SymEntry( $ID.text, VarType.FUNCTION, currentScope );
 			sym.definition = $ID;
