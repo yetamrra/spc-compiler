@@ -2,7 +2,7 @@ tree grammar SLJavaEmitter;
 
 options {
     tokenVocab=SpokenLang;
-    ASTLabelType=CommonTree;
+    ASTLabelType=SLTreeNode;
     output=template;
 }
 
@@ -62,6 +62,12 @@ whileStmt
 	
 printStmt
 	:	^(PRINT expr) -> printOut(string={$expr.st})
+	|	PRINTLN -> printOut(string={"\"\\n\""})
+	;
+
+callStmt
+	:	^(CALL ID args=expr*)
+	->	funcCall(func={$ID.text},args={$args.st})
 	;
 
 assignment

@@ -59,3 +59,5 @@ while(guard,body) ::=
 while ( <guard> )
 <body:block(body=body)>
 >>
+
+funcCall(func,args) ::= "<func>(<args; separator=\",\">)"
