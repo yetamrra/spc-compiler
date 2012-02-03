@@ -49,7 +49,7 @@ public class SpokenCompiler
 			nodes.reset();
 			SLJavaEmitter emitter = new SLJavaEmitter( nodes );
 			emitter.setTemplateLib( templates );
-			SLJavaEmitter.program_return strTmpl = emitter.program( className );
+			SLJavaEmitter.program_return strTmpl = emitter.program( className, symTree );
 			if ( emitter.getNumberOfSyntaxErrors() > 0 ) {
 				throw new CompileException("Error parsing AST");
 			}

@@ -6,45 +6,16 @@ options {
     output=template;
 }
 
-scope VarScope {
-    SymbolTable symbols;
-    String name;
-}
-
-program [String name]
-scope VarScope;
-@init {
-    // Set up the global scope
-    //$VarScope::symbols = new SymbolTable();
-    $VarScope::name = "global";
-}
-@after {
-    System.out.println( "Global symbols: " + $VarScope::symbols );
-}
+program [String name,Scope symbols]
 	:	f+=function+ { System.out.println("func"); } -> program(fList={$f},name={$name}) ;
 
 function
-scope VarScope;
-@init {
-    // Set up the global scope
-    //$VarScope::symbols = new SymbolTable();
-}
-@after {
-    System.out.println( "Symbols from " + $VarScope::name + ": " + $VarScope::symbols );
-}
-	:	^(FUNCTION ID argList functionBody)	{ $VarScope::name = $ID.text; } -> function(name={$ID.text},params={$argList.st},body={$functionBody.st},locals={$VarScope::symbols})
-	|	^(FUNCTION ID functionBody)		{ $VarScope::name = $ID.text; } -> function(name={$ID.text},body={$functionBody.st},locals={$VarScope::symbols})
+	:	^(FUNCTION ID argList functionBody)	-> function(name={$ID.text},params={$argList.st},body={$functionBody.st},locals={""})
+	|	^(FUNCTION ID functionBody)		-> function(name={$ID.text},body={$functionBody.st},locals={""})
 	;
 
 argList
-scope VarScope;
-@init {
-    //$VarScope::symbols = new SymbolTable();
-}
-@after {
-    System.out.println( "Symbols from function args: " + $VarScope::symbols );
-}
-	:	^(ARG_LIST args+=(ID { /*$VarScope::symbols.add($ID.text);*/ })+ ) -> arglist(args={$VarScope::symbols.getSt()})
+	:	^(ARG_LIST args+=(ID)+ ) -> arglist(args={""})
 	;
 
 functionBody
@@ -71,7 +42,7 @@ callStmt
 	;
 
 assignment
-        :       ^(ASSIGN ID expr) { /*$VarScope::symbols.add($ID.text);*/ } -> assign(name={$ID.text},value={$expr.st})
+        :       ^(ASSIGN ID expr) -> assign(name={$ID.text},value={$expr.st})
         ;
 
 boolExpr
