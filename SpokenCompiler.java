@@ -40,13 +40,11 @@ public class SpokenCompiler
 	        VarDef1 def = new VarDef1( nodes );		// Pass 1 - find vars and populate symbol table
 	        def.currentScope = symTree;
 	        def.downup(t);                          // Do pass 1
-	        System.out.println("globals: "+symTree);
 	        nodes.reset(); // rewind AST node stream to root
 	        //Ref ref = new Ref(nodes);               // Pass 2 - resolve references
 	        //ref.downup(t);                          // Do pass 2
 
-	        System.exit( 1 );
-	        
+                System.out.println( symTree.toStringNested(0) );
 			// Generate output into String variable
 			nodes.reset();
 			SLJavaEmitter emitter = new SLJavaEmitter( nodes );

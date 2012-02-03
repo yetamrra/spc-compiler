@@ -2,19 +2,30 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.LinkedList;
 
 class SymbolTable implements Scope
 {
     private Map<String,SymEntry> symbols;
+    private List<Scope> children;
     Scope parentScope;
     String name;
 
     public SymbolTable( Scope parent, String name )
     {
     	parentScope = parent;
+        if ( parent != null ) {
+	    parent.addChild( this );
+        }
     	this.name = name;
         symbols = new HashMap<String,SymEntry>();
+        children = new LinkedList<Scope>();
         System.out.println( "Created SymbolTable " + name + (parent == null ? "" : " inside parent " + parent.getScopeName()) );
+    }
+
+    public void addChild( Scope child )
+    {
+        children.add( child );
     }
 
 	/*
@@ -36,6 +47,19 @@ class SymbolTable implements Scope
 			symbols.put( key, e );
 		}
 	}*/
+
+	public String toStringNested( int indent )
+	{
+            String spaces = "";
+	    if ( indent > 0 ) {
+                spaces = String.format( "%" + indent + "s", "" );
+            }
+	    StringBuilder sb = new StringBuilder( spaces + getScopeName() + ": " + this.toString() + "\n" );
+            for ( Scope child : children ) {
+                sb.append( child.toStringNested(indent+2) );
+            }
+            return sb.toString();
+	}
 
 	public String toString()
 	{
