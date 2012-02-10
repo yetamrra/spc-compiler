@@ -20,6 +20,7 @@ public class SpokenCompiler
 			tr.close();
 
 			// Parse input into AST
+			System.out.println( "-- Parsing input file " + inName + "  --");
 			ANTLRFileStream input = new ANTLRFileStream( inName );
 			SpokenLangLexer lexer = new SpokenLangLexer( input );
 			CommonTokenStream tokens = new CommonTokenStream( lexer );
@@ -30,10 +31,11 @@ public class SpokenCompiler
 			if ( parser.getNumberOfSyntaxErrors() > 0 ) {
 				throw new CompileException("Error parsing input");
 			}
-
-			// Walk tree to do variable resolution
 			SLTreeNode t = (SLTreeNode)ast.getTree();
 			System.out.println( "AST: " + t.toStringTree() );
+
+			// Walk tree to do variable resolution
+			System.out.println( "-- Resolving symbol references --" );
 	        CommonTreeNodeStream nodes = new CommonTreeNodeStream(treeAdaptor, t);
 	        nodes.setTokenStream( tokens );
 	        SymbolTable symTree = new SymbolTable( null, "global" );	// Global scope
@@ -43,8 +45,11 @@ public class SpokenCompiler
 	        nodes.reset(); // rewind AST node stream to root
 	        //Ref ref = new Ref(nodes);               // Pass 2 - resolve references
 	        //ref.downup(t);                          // Do pass 2
+            System.out.println( symTree.toStringNested(0) );
 
-                System.out.println( symTree.toStringNested(0) );
+			System.out.println( "-- Inferring types --" );
+
+			System.out.println( "-- Generating code --" );
 			// Generate output into String variable
 			nodes.reset();
 			SLJavaEmitter emitter = new SLJavaEmitter( nodes );
@@ -63,6 +68,7 @@ public class SpokenCompiler
 			outFile.write( output.toString() );
 			outFile.close();
 
+			System.out.println( "-- Compiling " + outName + " --" );
 			// Run the Java compiler on the intermediate file
 			JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 			int results = compiler.run( null, null, null, outName );
@@ -73,6 +79,7 @@ public class SpokenCompiler
 			// Remove the intermediate file if the compile succeeded
 			File f = new File( outName );
 			//f.delete();
+			System.out.println( "-- Succeeded.  Output in " + className + ".class --" );
 		}
 		catch ( CompileException e ) {
 			System.err.println( e.getMessage() );

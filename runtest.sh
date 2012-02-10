@@ -10,5 +10,6 @@ output=$class.java
 
 java -cp antlrworks-1.4.2.jar:. SpokenCompiler "$input"
 if [ $? = 0 ]; then
+    echo "-- Running $class --"
     java $class
 fi
