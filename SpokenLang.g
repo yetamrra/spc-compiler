@@ -78,6 +78,8 @@ FUNC_END
 	
 AND 	:	'and' ;
 
+RETURN	:	'return';
+
 ID  :	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
     ;
 
@@ -150,6 +152,7 @@ stmt
 	|	assignment
 	|	whileStmt
 	|	callStmt
+	|	returnStmt
 	;
 
 assignment 
@@ -169,6 +172,11 @@ whileStmt
 callStmt
 	:	CALL ID (WITH expr (AND expr)*)?
 	->	^(CALL ID expr*)
+	;
+
+returnStmt
+	:	RETURN expr
+	->	^(RETURN expr)
 	;
 
 boolExpr

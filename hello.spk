@@ -1,3 +1,15 @@
+define function g taking arguments X as
+    return 2 * X
+end function
+
+define function main taking no arguments as
+    set X to 10
+    print X
+    new line
+    call f with 1 and X + 1
+	return 0
+end function
+
 define function f taking arguments Q and Z as
     set X to Q
     while X < Z do
@@ -6,11 +18,5 @@ define function f taking arguments Q and Z as
         new line
         set X to X + 1
     end while
-end function
-
-define function main taking no arguments as
-    set X to 10
-    print X
-    new line
-    call f with 0 and 10
+	return X
 end function

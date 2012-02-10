@@ -31,7 +31,8 @@ stmt
 	|	printStmt -> {$printStmt.st}
 	|	whileStmt -> {$whileStmt.st}
 	|	callStmt -> {$callStmt.st}
-        ;
+	|	returnStmt -> {$returnStmt.st}
+	;
 
 whileStmt
 	:	^(WHILE boolExpr functionBody) -> while(guard={$boolExpr.st},body={$functionBody.st})
@@ -45,6 +46,11 @@ printStmt
 callStmt
 	:	^(CALL ID args+=expr*)
 	->	funcCall(func={$ID.text},args={$args})
+	;
+
+returnStmt
+	:	^(RETURN expr)
+	->	return(expr={$expr.st})
 	;
 
 assignment

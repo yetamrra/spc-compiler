@@ -20,12 +20,7 @@ public class <name>
 function(name,type,params,body,locals) ::= 
 <<
 <type> <name>(<params>)
-{
-    System.out.println("Entered function <name>");
-    <body>
-    System.out.println("Leaving function <name>");
-    return 0;
-}
+<body>
 
 >>
 
@@ -59,7 +54,9 @@ expr(e1,e2,op) ::= "(<e1>) <op> (<e2>)"
 while(guard,body) ::=
 <<
 while ( <guard> )
-<body:block(body=body)>
+<body>
 >>
 
 funcCall(func,args) ::= "<func>(<args; separator=\",\">);"
+
+return(expr) ::= "return <expr>;"
