@@ -57,6 +57,8 @@ public class SpokenCompiler
 			// Produce intermediate output into java file
 			// FIXME: write to tmp file instead of hardcoded name
 			StringTemplate output = (StringTemplate)strTmpl.getTemplate();
+			System.out.println( output.toStructureString() );
+			//System.out.println( output.toString() );
 			FileWriter outFile = new FileWriter( outName );
 			outFile.write( output.toString() );
 			outFile.close();
@@ -64,7 +66,7 @@ public class SpokenCompiler
 			// Run the Java compiler on the intermediate file
 			JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 			int results = compiler.run( null, null, null, outName );
-			if ( results == 0 ) {
+			if ( results != 0 ) {
 				throw new CompileException("Compile failed.  Intermediate output in " + outName);
 			}
 

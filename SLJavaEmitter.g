@@ -7,15 +7,19 @@ options {
 }
 
 program [String name,Scope symbols]
-	:	f+=function+ { System.out.println("func"); } -> program(fList={$f},name={$name}) ;
+	:	f+=function+ -> program(fList={$f},name={$name}) ;
 
 function
-	:	^(FUNCTION ID argList functionBody)	-> function(name={$ID.text},params={$argList.st},body={$functionBody.st},locals={""})
-	|	^(FUNCTION ID functionBody)		-> function(name={$ID.text},body={$functionBody.st},locals={""})
+	:	^(FUNCTION ID argList? functionBody)	-> function(name={$ID.text},type={VarType.INT},params={$argList.st},body={$functionBody.st})
+	//|	^(FUNCTION ID functionBody)		-> function(name={$ID.text},body={$functionBody.st})
 	;
 
 argList
-	:	^(ARG_LIST args+=(ID)+ ) -> arglist(args={""})
+	:	^(ARG_LIST formal+=formalArg+ ) -> arglist(args={$formal})
+	;
+
+formalArg
+	:	ID	-> formal_arg(type={$ID.symbol.varType},name={$ID.text})
 	;
 
 functionBody
@@ -26,10 +30,12 @@ stmt
 	:       assignment -> {$assignment.st}
 	|	printStmt -> {$printStmt.st}
 	|	whileStmt -> {$whileStmt.st}
+	|	callStmt -> {$callStmt.st}
         ;
 
 whileStmt
-	:	^(WHILE boolExpr functionBody) -> while(guard={$boolExpr.st},body={$functionBody.st}) ;
+	:	^(WHILE boolExpr functionBody) -> while(guard={$boolExpr.st},body={$functionBody.st})
+	;
 	
 printStmt
 	:	^(PRINT expr) -> printOut(string={$expr.st})
@@ -37,12 +43,13 @@ printStmt
 	;
 
 callStmt
-	:	^(CALL ID args=expr*)
-	->	funcCall(func={$ID.text},args={$args.st})
+	:	^(CALL ID args+=expr*)
+	->	funcCall(func={$ID.text},args={$args})
 	;
 
 assignment
-        :       ^(ASSIGN ID expr) -> assign(name={$ID.text},value={$expr.st})
+        :       ^(ASSIGN ID expr) 	-> {$ID.symbol != null}? assign(type={VarType.INT},name={$ID.text},value={$expr.st})
+					-> assign(name={$ID.text},value={$expr.st})
         ;
 
 boolExpr
@@ -61,5 +68,5 @@ expr
 atom	:       INT		-> int_constant(val={$INT.text})
         |       FLOAT 		-> float_constant(val={$FLOAT.text})
         |       STRING		-> string_constant(text={$STRING.text})
-        |       ID		-> ident(name={$ID.text})
+        |       ID 		-> ident(name={$ID.text})
         ;

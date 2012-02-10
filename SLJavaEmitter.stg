@@ -17,19 +17,19 @@ public class <name>
 }
 >>
 
-function(name,params,body,locals) ::= 
+function(name,type,params,body,locals) ::= 
 <<
-void <name>(<params:arglist(args=params.st)>)
+<type> <name>(<params>)
 {
-	<locals:declarations(vars=locals.st)>
     System.out.println("Entered function <name>");
     <body>
     System.out.println("Leaving function <name>");
+    return 0;
 }
 
 >>
 
-assign(name,value) ::= "<name> = <value>;"
+assign(type,name,value) ::= "<if(type)><type> <endif><name> = <value>;"
 
 block(body) ::=
 <<
@@ -43,6 +43,8 @@ declarations(vars) ::= "<vars; separator=\";\n\">;"
 printOut(string) ::= "System.out.print( <string> );"
 
 arglist(args) ::= "<args; separator=\", \">"
+
+formal_arg(type,name) ::= "/*<type>*/ int <name>"
 
 string_constant(text) ::= "\"<text>\""
 
@@ -60,4 +62,4 @@ while ( <guard> )
 <body:block(body=body)>
 >>
 
-funcCall(func,args) ::= "<func>(<args; separator=\",\">)"
+funcCall(func,args) ::= "<func>(<args; separator=\",\">);"

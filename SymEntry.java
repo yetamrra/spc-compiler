@@ -14,6 +14,6 @@ class SymEntry
 	
 	public String toString()
 	{
-		return name + "<" + varType + ">"; 
+		return name + "<" + varType + "> (defined at line " + definition.getLine() + ")"; 
 	}
 }

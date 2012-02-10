@@ -97,7 +97,7 @@ atom
     :	{t.hasAncestor(EXPR)}?
     	ID
        	{
-       		System.out.println( "Setting scope of " + $ID.text + " to " + currentScope.getScopeName() );
+       		//System.out.println( "Setting scope of " + $ID.text + " to " + currentScope.getScopeName() );
        		t.scope = currentScope;
        	}
 	;
