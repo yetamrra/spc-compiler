@@ -75,7 +75,19 @@ WHILE_END
 
 FUNC_END 
 	:	END WS FUNCTION ;
-	
+
+fragment
+THE	:	'the' ;
+
+fragment
+RESULT	:	'result';
+
+fragment
+OF	:	'of';
+
+RESULT_OF
+	:	THE WS RESULT WS OF ;
+
 AND 	:	'and' ;
 
 RETURN	:	'return';
@@ -157,6 +169,7 @@ stmt
 
 assignment 
 	:	ASSIGN ID TO expr -> ^(ASSIGN ID expr)
+	|	ASSIGN ID TO callExpr -> ^(ASSIGN ID callExpr)
 	;
 
 printStmt
@@ -203,7 +216,12 @@ multExpr
 	;
 
 atom
-	:	INT | FLOAT | STRING | ID ;
+	:	INT | FLOAT | STRING | ID;
+
+callExpr
+	:	RESULT_OF callStmt
+	->	^(EXPR callStmt)
+	;
 
 functionDefBare 
 	:	FUNC_DEF ID NO_ARGS AS functionBody FUNC_END { System.out.println("Function " + $ID.text + "()"); }

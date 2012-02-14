@@ -45,7 +45,7 @@ printStmt
 
 callStmt
 	:	^(CALL ID args+=expr*)
-	->	funcCall(func={$ID.text},args={$args})
+	->	funcStmt(func={$ID.text},args={$args})
 	;
 
 returnStmt
@@ -68,6 +68,12 @@ expr
 	|	^(EXPR '*' e=expr e2=expr) -> expr(e1={$e.st},e2={$e2.st},op={"*"})
 	|	^(EXPR '/' e=expr e2=expr) -> expr(e1={$e.st},e2={$e2.st},op={"/"})
 	|	^(EXPR atom) -> {$atom.st}
+	|	^(EXPR callExpr) -> {$callExpr.st}
+	;
+
+callExpr
+	:	^(CALL ID args+=expr*)
+	->	funcCall(func={$ID.text},args={$args})
 	;
 
 

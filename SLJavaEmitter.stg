@@ -57,6 +57,8 @@ while ( <guard> )
 <body>
 >>
 
-funcCall(func,args) ::= "<func>(<args; separator=\",\">);"
+funcStmt(func,args) ::= "<funcCall(...)>;"
+
+funcCall(func,args) ::= "<func>(<args; separator=\",\">)"
 
 return(expr) ::= "return <expr>;"
