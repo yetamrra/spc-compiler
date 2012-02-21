@@ -21,6 +21,16 @@ tokens {
 	Scope currentScope;
 }
 
+IF : 'if' ;
+
+THEN : 'then' ;
+
+ELSE : 'else' ;
+
+IF_END : END WS IF ;
+
+NOTHING : 'nothing' ;
+
 PRINT : 'print' ;
 
 WHILE : 'while' ;
@@ -165,6 +175,8 @@ stmt
 	|	whileStmt
 	|	callStmt
 	|	returnStmt
+	|	emptyStmt
+	|	ifStmt
 	;
 
 assignment 
@@ -179,7 +191,7 @@ printStmt
 
 whileStmt
 	:	WHILE boolExpr DO functionBody WHILE_END
-	->  ^(WHILE boolExpr functionBody)
+	->	^(WHILE boolExpr functionBody)
 	;
 
 callStmt
@@ -190,6 +202,16 @@ callStmt
 returnStmt
 	:	RETURN expr
 	->	^(RETURN expr)
+	;
+
+emptyStmt
+	:	NOTHING
+	->	NOTHING
+	;
+
+ifStmt
+	:	IF boolExpr THEN functionBody ELSE functionBody IF_END
+	->	^(IF boolExpr functionBody functionBody)
 	;
 
 boolExpr

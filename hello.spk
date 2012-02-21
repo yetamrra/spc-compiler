@@ -1,4 +1,10 @@
 define function g taking arguments X as
+    if X < 2 then
+	print X
+	new line
+    else
+	nothing
+    end if
     return 2 * X
 end function
 

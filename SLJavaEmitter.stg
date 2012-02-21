@@ -62,3 +62,13 @@ funcStmt(func,args) ::= "<funcCall(...)>;"
 funcCall(func,args) ::= "<func>(<args; separator=\",\">)"
 
 return(expr) ::= "return <expr>;"
+
+ifStmt(cond,trueBlock,falseBlock) ::=
+<<
+if ( <cond> )
+<trueBlock>
+else
+<falseBlock>
+>>
+
+emptyStmt() ::= "/* nothing */"

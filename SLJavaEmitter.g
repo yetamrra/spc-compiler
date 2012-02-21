@@ -32,15 +32,18 @@ stmt
 	|	whileStmt -> {$whileStmt.st}
 	|	callStmt -> {$callStmt.st}
 	|	returnStmt -> {$returnStmt.st}
+	|	emptyStmt -> {$emptyStmt.st}
+	|	ifStmt -> {$ifStmt.st}
 	;
 
 whileStmt
-	:	^(WHILE boolExpr functionBody) -> while(guard={$boolExpr.st},body={$functionBody.st})
+	:	^(WHILE boolExpr functionBody)
+	->	while(guard={$boolExpr.st},body={$functionBody.st})
 	;
 	
 printStmt
-	:	^(PRINT expr) -> printOut(string={$expr.st})
-	|	PRINTLN -> printOut(string={"\"\\n\""})
+	:	^(PRINT expr) 		-> printOut(string={$expr.st})
+	|	PRINTLN 		-> printOut(string={"\"\\n\""})
 	;
 
 callStmt
@@ -53,13 +56,25 @@ returnStmt
 	->	return(expr={$expr.st})
 	;
 
+ifStmt
+	:	^(IF boolExpr t=functionBody f=functionBody)
+	->	ifStmt(cond={$boolExpr.st},trueBlock={$t.st},falseBlock={$f.st})
+	;
+
 assignment
         :       ^(ASSIGN ID expr) 	-> {$ID.symbol != null}? assign(type={VarType.INT},name={$ID.text},value={$expr.st})
 					-> assign(name={$ID.text},value={$expr.st})
         ;
 
+emptyStmt
+	:	NOTHING
+	->	//{%{"/* nothing */"}}	
+		emptyStmt(junk={""})
+	;
+
 boolExpr
-	:	^(o=CMPOP e1=expr e2=expr) -> expr(e1={$e1.st},e2={$e2.st},op={$o.text})
+	:	^(o=CMPOP e1=expr e2=expr)
+	-> 	expr(e1={$e1.st},e2={$e2.st},op={$o.text})
 	;
 
 expr
