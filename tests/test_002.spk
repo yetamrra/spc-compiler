@@ -1,0 +1,4 @@
+define function main taking no arguments as
+    print 5
+	return 0
+end function
