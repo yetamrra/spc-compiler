@@ -10,7 +10,7 @@ public class SpokenCompiler
 	public static void main( String[] args ) throws Exception
 	{
 		String inName = args[0];
-		String className = inName.replaceAll("\\.spk$","");
+		String className = inName.replaceAll("(.*/)?([^/]+)\\.spk$","$2");
 		String outName = inName.replaceAll( "\\.spk$", ".java" );
 
 		try {

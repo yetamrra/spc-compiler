@@ -7,3 +7,4 @@ VarDef1.java
 hello.java
 *.class
 .*.swp
+tests/*.java
