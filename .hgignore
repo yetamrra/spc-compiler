@@ -4,6 +4,7 @@ SpokenLangParser.java
 *.tokens
 SLJavaEmitter.java
 VarDef1.java
+TypeInf.java
 hello.java
 *.class
 .*.swp
