@@ -51,6 +51,7 @@ public class SpokenCompiler
 			TypeInf ti = new TypeInf(nodes);
 			ti.downup(t);
 
+			System.exit( 1 );
 
 			System.out.println( "-- Generating code --" );
 			// Generate output into String variable

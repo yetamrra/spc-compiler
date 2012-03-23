@@ -22,3 +22,6 @@ TypeInf.java: TypeInf.g SpokenLang.tokens
 
 clean:
 	rm -f *.class *.tokens SpokenLangLexer.java SpokenLangParser.java SLJavaEmitter.java
+
+test: SpokenCompiler.class
+	./runalltests.sh
