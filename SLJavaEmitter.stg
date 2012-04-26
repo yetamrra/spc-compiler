@@ -24,7 +24,7 @@ function(name,type,params,body,locals) ::=
 
 >>
 
-assign(type,name,value) ::= "<if(type)><type> <endif><name> = <value>;"
+assign(type,name,value) ::= "<if(type)><type.javaType> <endif><name> = <value>;"
 
 block(body) ::=
 <<
@@ -39,9 +39,9 @@ printOut(string) ::= "System.out.print( <string> );"
 
 arglist(args) ::= "<args; separator=\", \">"
 
-formal_arg(type,name) ::= "/*<type>*/ int <name>"
+formal_arg(type,name) ::= "<type> <name>"
 
-string_constant(text) ::= "\"<text>\""
+string_constant(text) ::= "<text>"
 
 int_constant(val) ::= "<val>"
 

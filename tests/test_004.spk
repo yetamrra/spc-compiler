@@ -1,0 +1,7 @@
+define function main taking no arguments as
+    set X to "Hello, World!"
+    set X to 5
+    print X
+    new line
+	return 0
+end function

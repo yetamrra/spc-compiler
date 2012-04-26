@@ -9,10 +9,26 @@ enum VarType
 
     public String toString()
     {
-        if ( this == UNKNOWN ) {
-            return super.toString();
-        } else {
-            return super.toString().toLowerCase();
+        switch ( this ) {
+            case UNKNOWN:
+                return super.toString();
+
+            default:
+                return super.toString().toLowerCase();
+        }
+    }
+
+    public String getJavaType()
+    {
+        switch ( this ) {
+            case UNKNOWN:
+                return super.toString();
+
+            case STRING:
+                return "java.lang.String";
+
+            default:
+                return super.toString().toLowerCase();
         }
     }
 };

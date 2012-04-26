@@ -50,8 +50,7 @@ public class SpokenCompiler
 			System.out.println( "-- Inferring types --" );
 			TypeInf ti = new TypeInf(nodes);
 			ti.downup(t);
-
-			System.exit( 1 );
+            System.out.println( symTree.toStringNested(0) );
 
 			System.out.println( "-- Generating code --" );
 			// Generate output into String variable

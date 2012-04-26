@@ -62,7 +62,7 @@ ifStmt
 	;
 
 assignment
-        :       ^(ASSIGN ID expr) 	-> {$ID.symbol != null}? assign(type={VarType.INT},name={$ID.text},value={$expr.st})
+        :       ^(ASSIGN ID expr) 	-> {$ID.symbol != null}? assign(type={$ID.symbol.varType},name={$ID.text},value={$expr.st})
 					-> assign(name={$ID.text},value={$expr.st})
         ;
 

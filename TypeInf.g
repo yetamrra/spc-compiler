@@ -8,6 +8,28 @@ options {
 @members {
     public Scope currentScope;
 	public List constraints;
+
+    void constrainType( SLTreeNode node, VarType vType )
+    {
+        if ( node.symbol == null ) {
+            System.err.println( "Undefined variable " + node.getText() );
+            System.exit( 1 );
+        } else if ( node.symbol.varType == VarType.UNKNOWN ) {
+            // Unknown type.  Set it if we can or add a constraint.
+            if ( vType != VarType.UNKNOWN ) {
+                System.out.println( "Setting type of " + node.getText() + " to " + vType );
+                node.symbol.varType = vType;
+            } else {
+                System.out.println("Constraint: typeof(" + node.getText() + ") = " + vType ); // "[" + rhs.getText() + "]"); }
+            }
+        } else {
+            // Already has a known type.  Make sure they match.
+            if ( node.symbol.varType != vType ) {
+                System.err.println( "Variable " + node.getText() + " of type " + node.symbol.varType + " not compatible with type " + vType );
+                System.exit( 1 );
+            }
+        }
+    }
 }
 
 // Topdown and bottomup tell ANTLR which rules
@@ -26,7 +48,7 @@ bottomup
     ;
 
 assignment
-	:	^(ASSIGN ID rhs=.) { System.out.println("Constraint: typeof(" + $ID.text + ") = " + $rhs.evalType + "[" + $rhs.getText() + "]"); }
+	:	^(ASSIGN ID rhs=.) { constrainType( $ID, $rhs.evalType ); }
 	;
 
 exprRoot returns [VarType type]
