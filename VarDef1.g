@@ -85,9 +85,13 @@ assignment
 			if ( var == null ) {
 				var = new SymEntry( $ID.text, VarType.UNKNOWN, currentScope );
 				var.definition = $ID;
-				$ID.symbol = var;
 				currentScope.define( var );
-			}
+			} else {
+                if ( var.varType == VarType.FUNCTION ) {
+                    throw new CompileException( "Attempted to assign a value to function " + $ID.text + " at line " + $ID.line );
+                }
+            }
+			$ID.symbol = var;
 		}
 	;
 	

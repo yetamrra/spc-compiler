@@ -13,7 +13,7 @@ compare=$class.expected
 testNum=${class#test_}
 
 echo -n "$testNum: "
-java -cp antlrworks-1.4.2.jar:. SpokenCompiler "$input"
+java -cp antlrworks-1.4.2.jar:. SpokenCompiler "$input" >/dev/null
 if [ $? = 0 ]; then
     cd "$spkDir"
     e=$( java $class )

@@ -10,7 +10,7 @@ options {
 	public List constraints;
     public SLTreeNode currentFunction;
 
-    VarType matchTypes( VarType knownType, VarType matchType )
+    VarType matchTypes( VarType knownType, VarType matchType, SLTreeNode node )
     {
         if ( knownType == VarType.UNKNOWN ) {
             // If the LHS is unknown then the type it should be
@@ -19,7 +19,7 @@ options {
         } else {
             // The LHS has a known type, so make sure they match
             if ( matchType != VarType.UNKNOWN && knownType != matchType ) {
-                throw new CompileException( "Incompatible types " + knownType + " and " + matchType );
+                throw new CompileException( "Incompatible types " + knownType + " and " + matchType + " for " + node.getText() + " at line " + node.getLine() );
             } else {
                 return knownType;
             }
@@ -34,17 +34,19 @@ options {
             // Setting the return type of a function.  Use the returnType instead of
             // varType
             FunctionSym f = (FunctionSym)node.symbol;
-            VarType t = matchTypes( f.returnType, vType );
+            VarType t = matchTypes( f.returnType, vType, node );
             if ( t != VarType.UNKNOWN ) {
                 f.returnType = t;
+				System.out.println( "Constraint: typeof(" + node.getText() + ") = " + vType );
                 // FIXME: add constraint
             }
         } else {
             // Try to set the variable type
             SymEntry s = node.symbol;
-            VarType t = matchTypes( s.varType, vType );
+            VarType t = matchTypes( s.varType, vType, node );
             if ( t != VarType.UNKNOWN ) {
                 s.varType = t;
+				System.out.println( "Constraint: typeof(" + node.getText() + ") = " + vType );
                 // FIXME: add constraint
             }
         }
@@ -134,9 +136,14 @@ binaryOp returns [VarType type]
 		{ 
 			if ( $a.type != VarType.UNKNOWN ) {
 				$type = $a.start.evalType;
+                if ( $b.start.symbol != null ) {
+                    constrainType( $b.start, $a.start.evalType );
+                }
 		   	} else {
 				$type = $b.start.evalType;
-				System.out.println( "Constraint: typeof(" + $a.text + ") = " + $b.type );
+                if ( $a.start.symbol != null ) {
+                    constrainType( $a.start, $b.start.evalType );
+                }
 			}
 		}
 	;
