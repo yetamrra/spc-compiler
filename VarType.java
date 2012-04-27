@@ -5,6 +5,7 @@ enum VarType
     , FLOAT
     , STRING
     , FUNCTION
+    , VOID
     ;
 
     public String toString()

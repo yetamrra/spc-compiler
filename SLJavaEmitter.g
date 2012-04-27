@@ -10,7 +10,7 @@ program [String name,Scope symbols]
 	:	f+=function+ -> program(fList={$f},name={$name}) ;
 
 function
-	:	^(FUNCTION ID argList? functionBody)	-> function(name={$ID.text},type={VarType.INT},params={$argList.st},body={$functionBody.st})
+	:	^(FUNCTION ID argList? functionBody)	-> function(name={$ID.text},type={((FunctionSym)$ID.symbol).returnType},params={$argList.st},body={$functionBody.st})
 	//|	^(FUNCTION ID functionBody)		-> function(name={$ID.text},body={$functionBody.st})
 	;
 
