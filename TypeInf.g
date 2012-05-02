@@ -57,8 +57,17 @@ options {
         // Make sure node represents a function and then
         // return its returnType.
         if ( node.symbol == null ) {
-            throw new CompileException( "Unresolved function " + node.getText() + " at line " + node.getLine() );
-        } else if ( node.symbol.varType == VarType.FUNCTION ) {
+            // Try to resolve the function.  It would have been previously skipped
+            // if it was a forward reference.
+            SymEntry var = currentFunction.scope.resolve( node.getText(), false );
+            if ( var == null ) {
+                throw new CompileException( "Unresolved function " + node.getText() + " at line " + node.getLine() );
+            } else {
+                node.symbol = var;
+            }
+        }
+        
+        if ( node.symbol.varType == VarType.FUNCTION ) {
             return ((FunctionSym)node.symbol).returnType;
         } else {
             throw new CompileException( "Can't call non-function symbol " + node.getText() + " at line " + node.getLine() );
@@ -84,6 +93,7 @@ bottomup
     :   exprRoot
 	|	assignment
     |   returnStmt
+    |   callStmt
     |   exitFunction
     ;
 

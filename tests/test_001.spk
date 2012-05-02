@@ -1,3 +1,10 @@
+define function main taking no arguments as
+    set X to 10
+    print X
+    new line
+    call f with 1 and X + 1
+end function
+
 define function g taking arguments X as
     if X < 2 then
 	print X
@@ -6,13 +13,6 @@ define function g taking arguments X as
 	nothing
     end if
     return 2 * X
-end function
-
-define function main taking no arguments as
-    set X to 10
-    print X
-    new line
-    call f with 1 and X + 1
 end function
 
 define function f taking arguments Q and Z as

@@ -51,6 +51,7 @@ enterFunction
 			SymEntry sym = new FunctionSym( $ID.text, currentScope );
 			sym.definition = $ID;
 			$ID.symbol = sym;
+            $ID.scope = currentScope;
 			currentScope.define( sym );
 			
 			// Make new scope for the function
@@ -101,7 +102,8 @@ callStmt
 		{
 			SymEntry var = currentScope.resolve( $ID.text, false );
 			if ( var == null ) {
-                throw new CompileException( "Attempted to call undefined function " + $ID.text + " at line " + $ID.line );
+                // This must be a forward reference.  Leave it alone for now.
+                //throw new CompileException( "Attempted to call undefined function " + $ID.text + " at line " + $ID.line );
 			} else {
                 if ( var.varType != VarType.FUNCTION ) {
                     throw new CompileException( "Attempted to use symbol " + $ID.text + " as a function at line " + $ID.line );
