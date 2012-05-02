@@ -1,0 +1,9 @@
+define function main taking no arguments as
+    set N to 1
+    set E to 10
+    while N < E do
+        print N
+        new line
+        set N to N + 1
+    end while
+end function
