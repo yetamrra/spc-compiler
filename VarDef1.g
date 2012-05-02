@@ -16,6 +16,7 @@ topdown
     |	enterFunction
     |	funcArgs
     |	assignment
+    |   callStmt
     |	atom
     ;
 
@@ -94,7 +95,23 @@ assignment
 			$ID.symbol = var;
 		}
 	;
-	
+
+callStmt
+	:	^(CALL ID .*)
+		{
+			SymEntry var = currentScope.resolve( $ID.text, false );
+			if ( var == null ) {
+                throw new CompileException( "Attempted to call undefined function " + $ID.text + " at line " + $ID.line );
+			} else {
+                if ( var.varType != VarType.FUNCTION ) {
+                    throw new CompileException( "Attempted to use symbol " + $ID.text + " as a function at line " + $ID.line );
+                } else {
+			        $ID.symbol = var;
+                }
+            }
+		}
+	;
+
 // Set scope for atoms in expressions, but don't define them
 atom
 	@init {SLTreeNode t = (SLTreeNode)input.LT(1);}

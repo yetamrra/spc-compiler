@@ -51,6 +51,19 @@ options {
             }
         }
     }
+
+    VarType getFuncType( SLTreeNode node )
+    {
+        // Make sure node represents a function and then
+        // return its returnType.
+        if ( node.symbol == null ) {
+            throw new CompileException( "Unresolved function " + node.getText() + " at line " + node.getLine() );
+        } else if ( node.symbol.varType == VarType.FUNCTION ) {
+            return ((FunctionSym)node.symbol).returnType;
+        } else {
+            throw new CompileException( "Can't call non-function symbol " + node.getText() + " at line " + node.getLine() );
+        }
+    }
 }
 
 // Topdown and bottomup tell ANTLR which rules
@@ -82,6 +95,10 @@ returnStmt
     :   ^(RETURN rhs=.) { constrainType( currentFunction, $rhs.evalType ); }
     ;
 
+callStmt returns [VarType type]
+    :   ^(CALL ID .*) { $type = $CALL.evalType = getFuncType($ID); }
+    ;
+
 exprRoot returns [VarType type]
 	:	^(EXPR expr) { $type = $EXPR.evalType = $expr.type; }
 	;
@@ -89,6 +106,7 @@ exprRoot returns [VarType type]
 expr returns [VarType type]
 @after { System.out.println( "typeof(" + $expr.text + ") = " + $type ); }
 	: atom { $type = $atom.type; }
+    | callStmt { $type = $callStmt.type; }
 	;
  
 enterFunction

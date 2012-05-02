@@ -1,0 +1,9 @@
+define function f taking no arguments as
+    return 2
+end function
+
+define function main taking no arguments as
+    set X to the result of call f
+    print X
+    new line
+end function
