@@ -19,7 +19,7 @@ public class <name>
 
 function(name,type,params,body,locals) ::= 
 <<
-<type> <name>(<params>)
+<type.javaType> <name>(<params>)
 <body>
 
 >>
@@ -39,7 +39,7 @@ printOut(string) ::= "System.out.print( <string> );"
 
 arglist(args) ::= "<args; separator=\", \">"
 
-formal_arg(type,name) ::= "<type> <name>"
+formal_arg(type,name) ::= "<type.javaType> <name>"
 
 string_constant(text) ::= "<text>"
 
