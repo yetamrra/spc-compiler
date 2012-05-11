@@ -1,0 +1,9 @@
+define function main taking no arguments as
+    print the result of call f with 12
+end function
+
+define function f taking arguments N as
+    set X to N
+    return X * 2
+end function
+

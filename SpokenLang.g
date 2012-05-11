@@ -186,6 +186,7 @@ assignment
 
 printStmt
 	:	PRINT expr -> ^(PRINT expr)
+    |   PRINT callExpr -> ^(PRINT callExpr)
 	|	NEW_LINE -> ^(PRINTLN)
 	;
 
@@ -200,8 +201,8 @@ callStmt
 	;
 
 returnStmt
-	:	RETURN expr
-	->	^(RETURN expr)
+	:	RETURN expr ->	^(RETURN expr)
+	|	RETURN callExpr ->	^(RETURN callExpr)
 	;
 
 emptyStmt

@@ -8,7 +8,7 @@ all: SpokenCompiler.class
 
 SpokenCompiler.class: VarType.class SymbolTable.class SpokenLangLexer.class SpokenLangParser.class \
 	SLJavaEmitter.class SymEntry.class SLTreeNode.class SLTreeAdaptor.class VarDef1.class TypeInf.class \
-	FunctionSym.class
+	FunctionSym.class VarConstraint.class
 
 SpokenLangLexer.java SpokenLangParser.java: SpokenLang.g
 	java -cp $(CLASSPATH) org.antlr.Tool $(ANTLRFLAGS) SpokenLang.g

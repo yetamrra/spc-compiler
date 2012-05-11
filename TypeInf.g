@@ -5,9 +5,15 @@ options {
   filter = true;
 }
 
+@header {
+    import java.util.Set;
+    import java.util.HashSet;
+    import java.util.Iterator;
+}
+
 @members {
     public Scope currentScope;
-	public List constraints;
+	public Set<VarConstraint> constraints = new HashSet();
     public SLTreeNode currentFunction;
 
     VarType matchTypes( VarType knownType, VarType matchType, SLTreeNode node )
@@ -30,6 +36,8 @@ options {
     {
         if ( node.symbol == null ) {
             throw new CompileException( "Unresolved variable " + node.getText() + " at line " + node.getLine() );
+        } else if ( vType == VarType.UNKNOWN || vType == null ) {
+            return;
         } else if ( node.symbol.varType == VarType.FUNCTION ) {
             // Setting the return type of a function.  Use the returnType instead of
             // varType
@@ -50,6 +58,78 @@ options {
                 // FIXME: add constraint
             }
         }
+    }
+
+    void constrainTypeList( List<SLTreeNode> nodes, VarType vType )
+    {
+        for ( SLTreeNode n: nodes ) {
+            constrainType( n, vType );
+        }
+    }
+
+    void addConstraintList( SymEntry lhs, List<SLTreeNode> rhs )
+    {
+        for ( SLTreeNode s: rhs ) {
+            addConstraint( lhs, s.symbol );
+        }
+    }
+
+    void addConstraint( SymEntry lhs, SymEntry rhs )
+    {
+        constraints.add( new VarConstraint(lhs,rhs) );
+        System.out.println( "New constraints: " + constraints );
+    }
+
+    void processConstraints()
+    {
+        while ( constraints.size() > 0 ) {
+            int s = constraints.size();
+            Iterator i = constraints.iterator();
+            while ( i.hasNext() ) {
+                VarConstraint v = (VarConstraint)i.next();
+                if ( unifyTypes( v.v1, v.v2 ) ) {
+                    i.remove();
+                }
+            }
+            if ( s == constraints.size() ) {
+                // FIXME: Didn't eliminate any constraints.
+                break;
+            }
+        }
+    }
+
+    boolean unifyTypes( SymEntry v1, SymEntry v2 )
+    {
+        VarType t1 = (v1.varType == VarType.FUNCTION) ? ((FunctionSym)v1).returnType : v1.varType;
+        VarType t2 = (v2.varType == VarType.FUNCTION) ? ((FunctionSym)v2).returnType : v2.varType;
+
+        if ( t1 == VarType.UNKNOWN ) {
+            if ( t2 == VarType.UNKNOWN ) {
+                return false;
+            } else {
+                if ( v1.varType == VarType.FUNCTION ) {
+                    ((FunctionSym)v1).returnType = t2;
+                } else {
+                    v1.varType = t2;
+                }
+                return true;
+            }
+        } else {
+            if ( t2 == VarType.UNKNOWN ) {
+                if ( v2.varType == VarType.FUNCTION ) {
+                    ((FunctionSym)v2).returnType = t1;
+                } else {
+                    v2.varType = t1;
+                }
+                return true;
+            } else {
+                if ( t1 != t2 ) {
+                    throw new CompileException( "Types of " + v1 + " and " + v2 + " are not compatible." );
+                }
+            }
+        }
+
+        return false;
     }
 
     VarType getFuncType( SLTreeNode node )
@@ -98,7 +178,14 @@ bottomup
     ;
 
 assignment
-	:	^(ASSIGN ID rhs=.) { constrainType( $ID, $rhs.evalType ); }
+	:	^(ASSIGN ID rhs=exprRoot) 
+        {
+            constrainType( $ID, $rhs.type );
+            addConstraintList( $ID.symbol, $rhs.vars );
+            if ( $ID.evalType != VarType.UNKNOWN ) {
+                constrainTypeList( $rhs.vars, $ID.evalType );
+            }
+        }
 	;
 
 returnStmt
@@ -109,14 +196,14 @@ callStmt returns [VarType type]
     :   ^(CALL ID .*) { $type = $CALL.evalType = getFuncType($ID); }
     ;
 
-exprRoot returns [VarType type]
-	:	^(EXPR expr) { $type = $EXPR.evalType = $expr.type; }
+exprRoot returns [VarType type, List<SLTreeNode> vars]
+	:	^(EXPR expr) { $type = $EXPR.evalType = $expr.type; $vars = $expr.vars; }
 	;
 
-expr returns [VarType type]
-@after { System.out.println( "typeof(" + $expr.text + ") = " + $type ); }
-	: atom { $type = $atom.type; }
-    | callStmt { $type = $callStmt.type; }
+expr returns [VarType type, List<SLTreeNode> vars]
+    @after { System.out.println( "typeof(" + $expr.text + ") = " + $type ); }
+	: atom { $type = $atom.type; $vars = $atom.vars; }
+    | callStmt { $type = $callStmt.type; $vars = new ArrayList(); /* FIXME: Track function symbol */ }
 	;
  
 enterFunction
@@ -137,11 +224,15 @@ exitFunction
             if ( ((FunctionSym)currentFunction.symbol).returnType == VarType.UNKNOWN ) {
                 constrainType( currentFunction, VarType.VOID );
             }
+
+            processConstraints();
         }
     ;
 
 // Set scope for atoms in expressions, but don't define them
-atom returns [VarType type]
+atom returns [VarType type, List<SLTreeNode> vars]
+    @init { $vars = new ArrayList(); }
+    @after { System.out.println( "Vars in " + $start.toStringTree() + ": " + $vars ); }
 	:	INT 	{ $type = VarType.INT; }
 	|	FLOAT 	{ $type = VarType.FLOAT; }
 	|	STRING 	{ $type = VarType.STRING; }
@@ -154,25 +245,34 @@ atom returns [VarType type]
 			}
 
 			$type = $ID.symbol.varType; 
+            $vars.add( $ID );
 		}
-	|	binaryOp { $type = $binaryOp.type; }
+	|	binaryOp
+        {
+            $type = $binaryOp.type;
+            $vars = $binaryOp.vars;
+        }
 	;
 
-binaryOp returns [VarType type]
-@after { $start.evalType = $type; }
+binaryOp returns [VarType type, List<SLTreeNode> vars]
+    @after { $start.evalType = $type; }
 	: 	binop a=exprRoot b=exprRoot 
 		{ 
 			if ( $a.type != VarType.UNKNOWN ) {
 				$type = $a.start.evalType;
+                constrainTypeList( $b.vars, $type );
                 if ( $b.start.symbol != null ) {
                     constrainType( $b.start, $a.start.evalType );
                 }
 		   	} else {
 				$type = $b.start.evalType;
+                constrainTypeList( $a.vars, $type );
                 if ( $a.start.symbol != null ) {
                     constrainType( $a.start, $b.start.evalType );
                 }
 			}
+            $vars = $a.vars;
+            $vars.addAll( $b.vars );
 		}
 	;
 
