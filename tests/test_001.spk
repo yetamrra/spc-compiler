@@ -18,7 +18,7 @@ end function
 define function f taking arguments Q and Z as
     set X to Q
     while X < Z do
-        set Y to the result of call g with X
+        set Y to the result of calling g with X
         print Y
         new line
         set X to X + 1

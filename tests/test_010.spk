@@ -1,5 +1,5 @@
 define function f taking no arguments as
-    return the result of call g with 1
+    return the result of calling g with 1
 end function
 
 define function g taking arguments Y as
@@ -7,5 +7,5 @@ define function g taking arguments Y as
 end function
 
 define function main taking no arguments as
-    print the result of call f
+    print the result of calling f
 end function

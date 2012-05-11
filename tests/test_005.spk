@@ -3,7 +3,7 @@ define function f taking no arguments as
 end function
 
 define function main taking no arguments as
-    set X to the result of call f
+    set X to the result of calling f
     print X
     new line
 end function

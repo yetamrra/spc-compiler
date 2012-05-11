@@ -65,6 +65,7 @@ WITH_ARGS
 AS	:	'as' ;
 
 CALL	:	'call' ;
+CALLING	:	'calling' ;
 
 WITH	:	'with' ;
 
@@ -200,6 +201,11 @@ callStmt
 	->	^(CALL ID expr*)
 	;
 
+callingStmt
+	:	CALLING ID (WITH expr (AND expr)*)?
+	->	^(CALL ID expr*)
+	;
+
 returnStmt
 	:	RETURN expr ->	^(RETURN expr)
 	|	RETURN callExpr ->	^(RETURN callExpr)
@@ -242,8 +248,8 @@ atom
 	:	INT | FLOAT | STRING | ID;
 
 callExpr
-	:	RESULT_OF callStmt
-	->	^(EXPR callStmt)
+	:	RESULT_OF callingStmt
+	->	^(EXPR callingStmt)
 	;
 
 functionDefBare 
