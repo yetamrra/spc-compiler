@@ -11,7 +11,10 @@ class VarConstraint
 
     public boolean equals( VarConstraint rhs )
     {
-        return v1 == rhs.v1 && v2 == rhs.v2;
+        return (v1 == rhs.v1 && v2 == rhs.v2)
+               ||
+               (v2 == rhs.v1 && v1 == rhs.v2)
+               ;
     }
 
     public String toString()

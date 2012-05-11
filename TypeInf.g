@@ -76,12 +76,14 @@ options {
 
     void addConstraint( SymEntry lhs, SymEntry rhs )
     {
-        constraints.add( new VarConstraint(lhs,rhs) );
-        System.out.println( "New constraints: " + constraints );
+        VarConstraint v = new VarConstraint(lhs,rhs);
+        constraints.add( v  );
+        System.out.println( "New constraint: " + v );
     }
 
-    void processConstraints()
+    void processConstraints( boolean isFinal )
     {
+        System.out.println( "Processing constraints" + (isFinal ? " at the end" : "") + ": " + constraints );
         while ( constraints.size() > 0 ) {
             int s = constraints.size();
             Iterator i = constraints.iterator();
@@ -92,8 +94,24 @@ options {
                 }
             }
             if ( s == constraints.size() ) {
-                // FIXME: Didn't eliminate any constraints.
+                // Didn't eliminate any constraints.
                 break;
+            }
+        }
+        if ( isFinal ) {
+            // For anything left unsolved, functions must be void
+            // and variables must be Object.
+            Iterator i = constraints.iterator();
+            while ( i.hasNext() ) {
+                VarConstraint v = (VarConstraint)i.next();
+                if ( v.v1.varType == VarType.FUNCTION ) {
+                    //assert ((FunctionSym)v.v1).returnType == VarType.UKNOWN; 
+                    ((FunctionSym)v.v1).returnType = VarType.VOID;
+                }
+                if ( v.v2.varType == VarType.FUNCTION ) {
+                    //assert ((FunctionSym)v.v2).returnType == VarType.UKNOWN; 
+                    ((FunctionSym)v.v2).returnType = VarType.VOID;
+                }
             }
         }
     }
@@ -112,6 +130,7 @@ options {
                 } else {
                     v1.varType = t2;
                 }
+                System.out.println( "Solved constraint: typeof(" + v1.scope.getScopeName() + "::" + v1.name + ") = " + t2 );
                 return true;
             }
         } else {
@@ -121,15 +140,19 @@ options {
                 } else {
                     v2.varType = t1;
                 }
+                System.out.println( "Solved constraint: typeof(" + v2.scope.getScopeName() + "::" + v2.name + ") = " + t1 );
                 return true;
             } else {
                 if ( t1 != t2 ) {
                     throw new CompileException( "Types of " + v1 + " and " + v2 + " are not compatible." );
+                } else {
+                    System.out.println( "Solved constraint: typeof(" + 
+                                        v1.scope.getScopeName() + "::" + v1.name + ") = typeof(" +
+                                        v2.scope.getScopeName() + "::" + v2.name + ") => both " + t1 ); 
+                    return true;
                 }
             }
         }
-
-        return false;
     }
 
     VarType getFuncType( SLTreeNode node )
@@ -171,6 +194,7 @@ topdown
 
 bottomup
     :   exprRoot
+    |   boolExpr
 	|	assignment
     |   returnStmt
     |   callStmt
@@ -189,21 +213,59 @@ assignment
 	;
 
 returnStmt
-    :   ^(RETURN rhs=.) { constrainType( currentFunction, $rhs.evalType ); }
+    :   ^(RETURN rhs=exprRoot)
+        {
+            constrainType( currentFunction, $rhs.type );
+            addConstraintList( currentFunction.symbol, $rhs.vars );
+        }
     ;
 
-callStmt returns [VarType type]
-    :   ^(CALL ID .*) { $type = $CALL.evalType = getFuncType($ID); }
+callStmt returns [VarType type, List<SLTreeNode> vars]
+    :   ^(CALL ID .*)
+        {
+            $type = $CALL.evalType = getFuncType($ID);
+            $vars = new ArrayList();
+            $vars.add( $ID );
+        }
     ;
 
 exprRoot returns [VarType type, List<SLTreeNode> vars]
-	:	^(EXPR expr) { $type = $EXPR.evalType = $expr.type; $vars = $expr.vars; }
+    @after { System.out.println( "typeof(" + $exprRoot.text + ") = " + $type ); }
+	:	^(EXPR expr)
+        {
+            $type = $EXPR.evalType = $expr.type;
+            $vars = $expr.vars;
+        }
 	;
 
+boolExpr returns [VarType type, List<SLTreeNode> vars]
+    @after { System.out.println( "typeof(" + $boolExpr.text + ") = " + $type ); }
+	:	^(CMPOP e1=exprRoot e2=exprRoot)
+        {
+            $type = $CMPOP.evalType = VarType.BOOLEAN;
+            if ( $CMPOP.text.equals("<") ||
+                 $CMPOP.text.equals("<=") ||
+                 $CMPOP.text.equals(">") ||
+                 $CMPOP.text.equals(">=")
+               )
+            {
+                constrainTypeList( $e1.vars, VarType.INT );
+                constrainTypeList( $e2.vars, VarType.INT );
+            } else {
+                // FIXME: deal with == and !=
+            }
+            $vars = null;
+            for ( SLTreeNode n: $e1.vars ) {
+                addConstraintList( n.symbol, $e2.vars );
+            }
+            for ( SLTreeNode n: $e2.vars ) {
+                addConstraintList( n.symbol, $e1.vars );
+            }
+        }
+	;
 expr returns [VarType type, List<SLTreeNode> vars]
-    @after { System.out.println( "typeof(" + $expr.text + ") = " + $type ); }
 	: atom { $type = $atom.type; $vars = $atom.vars; }
-    | callStmt { $type = $callStmt.type; $vars = new ArrayList(); /* FIXME: Track function symbol */ }
+    | callStmt { $type = $callStmt.type; $vars = $callStmt.vars; }
 	;
  
 enterFunction
@@ -219,13 +281,14 @@ enterFunction
 exitFunction
     :   FUNCTION
         {
-            // If the function's type is unknown, set it to void
-            // FIXME: We probably can't set this to void in the general case
-            if ( ((FunctionSym)currentFunction.symbol).returnType == VarType.UNKNOWN ) {
-                constrainType( currentFunction, VarType.VOID );
-            }
+            processConstraints( false );
 
-            processConstraints();
+            // If the function's type is unknown, add a constraint of
+            // setting it to itself.  This allows us to later detect
+            // that it needs to become void.
+            if ( ((FunctionSym)currentFunction.symbol).returnType == VarType.UNKNOWN ) {
+               addConstraint( currentFunction.symbol, currentFunction.symbol );
+            }
         }
     ;
 

@@ -6,6 +6,7 @@ enum VarType
     , STRING
     , FUNCTION
     , VOID
+    , BOOLEAN
     ;
 
     public String toString()

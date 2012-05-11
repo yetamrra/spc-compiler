@@ -1,0 +1,12 @@
+define function f taking arguments Q and Z as
+    set X to Q
+    while X < Z do
+        print X
+        new line
+        set X to X + 1
+    end while
+end function
+
+define function main taking no arguments as
+    call f with 1 and 10
+end function

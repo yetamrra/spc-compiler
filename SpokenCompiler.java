@@ -50,6 +50,7 @@ public class SpokenCompiler
 			System.out.println( "-- Inferring types --" );
 			TypeInf ti = new TypeInf(nodes);
 			ti.downup(t);
+            ti.processConstraints( true );  // process outstanding type constraints
             System.out.println( symTree.toStringNested(0) );
 
 			System.out.println( "-- Generating code --" );
