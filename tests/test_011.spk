@@ -1,0 +1,24 @@
+define function fib taking arguments n as
+    if n < 3 then
+        return 1
+    else
+        set f to the result of calling fib with n - 1
+        set g to the result of calling fib with n - 2
+        return f + g
+    end if
+end function
+
+define function main taking no arguments as
+    set e to 20
+    print "The first "
+    print e
+    print " fibonacci numbers:"
+    new line
+    set x to 1
+    while x < e do
+        print the result of calling fib with x
+        print " "
+        set x to x + 1
+    end while
+    new line
+end function
