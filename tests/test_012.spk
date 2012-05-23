@@ -1,0 +1,19 @@
+define function f taking arguments n as
+	if n < 1 then
+		return 0
+	else
+		return the result of calling g with n - 2
+	end if
+end function
+
+define function g taking arguments m as
+	if m < 2 then
+		return 2
+	else
+		return the result of calling f with m + 1
+	end if
+end function
+
+define function main taking no arguments as
+	print the result of calling f with 10
+end function
