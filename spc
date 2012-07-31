@@ -3,7 +3,8 @@
 if [ -n "$1" ]; then
     input="$1"
 else
-    input="hello.spk"
+    echo "Usage: $0 sourcefile.spk"
+	exit 1
 fi
 spkDir=$( dirname "$input" )
 spkFile=$( basename "$input" )
