@@ -1,3 +1,5 @@
+package org.bxg.spokencompiler;
+
 public interface Scope {
     public String getScopeName();
     public Scope getParentScope();

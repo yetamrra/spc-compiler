@@ -9,3 +9,4 @@ hello.java
 *.class
 .*.swp
 tests/*.java
+bin

@@ -17,6 +17,14 @@ tokens {
 	PRINTLN;
 }
 
+@header {
+	package org.bxg.spokencompiler;
+}
+
+@lexer::header {
+	package org.bxg.spokencompiler;
+}
+
 @members {
 	Scope currentScope;
 }

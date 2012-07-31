@@ -5,6 +5,10 @@ options {
   filter = true;
 }
 
+@header {
+	package org.bxg.spokencompiler;
+}
+
 @members {
     public Scope currentScope;
 }

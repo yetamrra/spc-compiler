@@ -6,6 +6,8 @@ options {
 }
 
 @header {
+	package org.bxg.spokencompiler;
+
     import java.util.Set;
     import java.util.HashSet;
     import java.util.Iterator;

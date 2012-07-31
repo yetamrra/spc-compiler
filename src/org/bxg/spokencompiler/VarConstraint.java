@@ -1,3 +1,5 @@
+package org.bxg.spokencompiler;
+
 class VarConstraint
 {
     public SymEntry v1;

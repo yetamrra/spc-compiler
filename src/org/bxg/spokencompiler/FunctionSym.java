@@ -1,3 +1,5 @@
+package org.bxg.spokencompiler;
+
 class FunctionSym extends SymEntry
 {
     public VarType returnType;

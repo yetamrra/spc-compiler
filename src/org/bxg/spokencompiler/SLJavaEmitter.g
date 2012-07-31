@@ -6,6 +6,10 @@ options {
     output=template;
 }
 
+@header {
+	package org.bxg.spokencompiler;
+}
+
 program [String name,Scope symbols]
 	:	f+=function+ -> program(fList={$f},name={$name}) ;
 

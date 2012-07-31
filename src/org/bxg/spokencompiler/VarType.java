@@ -1,3 +1,5 @@
+package org.bxg.spokencompiler;
+
 enum VarType
 {
     UNKNOWN
