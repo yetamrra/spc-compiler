@@ -2,23 +2,27 @@ import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;
 import org.antlr.stringtemplate.*;
 import java.io.*;
+
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 
 public class SpokenCompiler
 {
-	public static void main( String[] args ) throws Exception
+	private StringTemplateGroup templates;
+
+	public void compileFile( String fileName, String templateName ) throws CompileException, IOException
 	{
-		String inName = args[0];
+		// Figure out file names
+		String inName = fileName;
 		String className = inName.replaceAll("(.*/)?([^/]+)\\.spk$","$2");
 		String outName = inName.replaceAll( "\\.spk$", ".java" );
 
-		try {
-			// Read string templates
-			FileReader tr = new FileReader( "SLJavaEmitter.stg" );
-			StringTemplateGroup templates = new StringTemplateGroup( tr );
-			tr.close();
+		// Read string templates
+		FileReader tr = new FileReader( templateName );
+	    templates = new StringTemplateGroup( tr );
+		tr.close();
 
+		try {
 			// Parse input into AST
 			System.out.println( "-- Parsing input file " + inName + "  --");
 			ANTLRFileStream input = new ANTLRFileStream( inName );
@@ -33,26 +37,26 @@ public class SpokenCompiler
 			}
 			SLTreeNode t = (SLTreeNode)ast.getTree();
 			System.out.println( "AST: " + t.toStringTree() );
-
+	
 			// Walk tree to do variable resolution
 			System.out.println( "-- Resolving symbol references --" );
-	        CommonTreeNodeStream nodes = new CommonTreeNodeStream(treeAdaptor, t);
-	        nodes.setTokenStream( tokens );
-	        SymbolTable symTree = new SymbolTable( null, "global" );	// Global scope
-	        VarDef1 def = new VarDef1( nodes );		// Pass 1 - find vars and populate symbol table
-	        def.currentScope = symTree;
-	        def.downup(t);                          // Do pass 1
-	        nodes.reset(); // rewind AST node stream to root
-	        //Ref ref = new Ref(nodes);               // Pass 2 - resolve references
-	        //ref.downup(t);                          // Do pass 2
-            System.out.println( symTree.toStringNested(0) );
-
+			CommonTreeNodeStream nodes = new CommonTreeNodeStream(treeAdaptor, t);
+			nodes.setTokenStream( tokens );
+			SymbolTable symTree = new SymbolTable( null, "global" );	// Global scope
+			VarDef1 def = new VarDef1( nodes );		// Pass 1 - find vars and populate symbol table
+			def.currentScope = symTree;
+			def.downup(t);                          // Do pass 1
+			nodes.reset(); // rewind AST node stream to root
+			//Ref ref = new Ref(nodes);               // Pass 2 - resolve references
+			//ref.downup(t);                          // Do pass 2
+			System.out.println( symTree.toStringNested(0) );
+	
 			System.out.println( "-- Inferring types --" );
 			TypeInf ti = new TypeInf(nodes);
 			ti.downup(t);
-            ti.processConstraints( true );  // process outstanding type constraints
-            System.out.println( symTree.toStringNested(0) );
-
+			ti.processConstraints( true );  // process outstanding type constraints
+			System.out.println( symTree.toStringNested(0) );
+	
 			System.out.println( "-- Generating code --" );
 			// Generate output into String variable
 			nodes.reset();
@@ -62,7 +66,7 @@ public class SpokenCompiler
 			if ( emitter.getNumberOfSyntaxErrors() > 0 ) {
 				throw new CompileException("Error parsing AST");
 			}
-
+	
 			// Produce intermediate output into java file
 			// FIXME: write to tmp file instead of hardcoded name
 			StringTemplate output = (StringTemplate)strTmpl.getTemplate();
@@ -71,23 +75,40 @@ public class SpokenCompiler
 			FileWriter outFile = new FileWriter( outName );
 			outFile.write( output.toString() );
 			outFile.close();
-
-			System.out.println( "-- Compiling " + outName + " --" );
-			// Run the Java compiler on the intermediate file
-			JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-			int results = compiler.run( null, null, null, outName );
-			if ( results != 0 ) {
-				throw new CompileException("Compile failed.  Intermediate output in " + outName);
-			}
-
-			// Remove the intermediate file if the compile succeeded
-			File f = new File( outName );
-			//f.delete();
-			System.out.println( "-- Succeeded.  Output in " + className + ".class --" );
 		}
-		catch ( CompileException e ) {
-			System.err.println( e.getMessage() );
-			System.exit( 1 );
+		catch ( RecognitionException e ) {
+			throw new CompileException( e.getMessage() );
+		}
+
+		System.out.println( "-- Compiling " + outName + " --" );
+		// Run the Java compiler on the intermediate file
+		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+		int results = compiler.run( null, null, null, outName );
+		if ( results != 0 ) {
+			throw new CompileException("Compile failed.  Intermediate output in " + outName);
+		}
+
+		// Remove the intermediate file if the compile succeeded
+		File f = new File( outName );
+		//f.delete();
+		System.out.println( "-- Succeeded.  Output in " + className + ".class --" );		
+	}
+	
+	public static void main( String[] args ) throws Exception
+	{
+		SpokenCompiler c = new SpokenCompiler();
+		for ( String fileArg: args ) {
+			try {
+				c.compileFile( fileArg, "SLJavaEmitter.stg" );
+			}
+			catch ( CompileException e ) {
+				System.err.println( "Error compiling " + fileArg + ": " + e.getMessage() );
+				System.exit( 1 );
+			}
+			catch ( IOException e ) {
+				System.err.println( "Error compiling " + fileArg + ": " + e.getMessage() );
+				System.exit( 1 );
+			}
 		}
 	}
 }

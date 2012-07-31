@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="examples-v3/|examples-v3/C/polydiff/|examples-v3/csharp/java-from-v2/|examples-v3/csharp/java/|examples-v3/csharp/tweak/|examples-v3/java/ANTLR/|examples-v3/java/C/|examples-v3/java/LL-star/|examples-v3/java/cminus/|examples-v3/java/composite-java/|examples-v3/java/dynamic-scope/|examples-v3/java/fuzzy/|examples-v3/java/hoistedPredicates/|examples-v3/java/import/|examples-v3/java/island-grammar/|examples-v3/java/java-from-v2/|examples-v3/java/java/|examples-v3/java/polydiff/|examples-v3/java/python/|examples-v3/java/scopes/|examples-v3/java/simplecTreeParser/|examples-v3/java/treeparser/|examples-v3/java/tweak/|examples-v3/java/xmlLexer/" kind="src" path=""/>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="antlr-3.4-complete.jar"/>
+	<classpathentry kind="lib" path="/Users/ben/Documents/Classes/Dissertation/workspace/grammar/lib/antlr-3.4-complete.jar"/>
+	<classpathentry kind="lib" path="lib"/>
 	<classpathentry kind="output" path="examples-v3/java/java"/>
 </classpath>
