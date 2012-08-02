@@ -92,7 +92,7 @@ public class SpokenCompiler
 
 		// Remove the intermediate file if the compile succeeded
 		File f = new File( outName );
-		//f.delete();
+		f.delete();
 		System.out.println( "-- Succeeded.  Output in " + className + ".class --" );		
 	}
 	
