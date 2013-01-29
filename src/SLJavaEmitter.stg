@@ -51,6 +51,8 @@ ident(name) ::= "<name>"
 
 expr(e1,e2,op) ::= "(<e1>) <op> (<e2>)"
 
+arrayRef(index,array) ::= "<array>[<index>]"
+
 while(guard,body) ::=
 <<
 while ( <guard> )

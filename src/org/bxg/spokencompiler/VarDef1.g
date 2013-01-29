@@ -99,6 +99,21 @@ assignment
             }
 			$ID.symbol = var;
 		}
+	|	^(ASSIGN ^(ARRAYREF idx=atom arr=ID) .)
+		{
+			SymEntry var = currentScope.resolve( $arr.text, false );
+			if ( var == null ) {
+				var = new SymEntry( $arr.text, VarType.UNKNOWN, currentScope );
+				var.isArray = true;
+				var.definition = $arr;
+				currentScope.define( var );
+			} else {
+                if ( var.varType == VarType.FUNCTION ) {
+                    throw new CompileException( "Attempted to assign a value to function " + $arr.text + " at line " + $arr.line );
+                }
+            }
+			$arr.symbol = var;
+		}	
 	;
 
 callStmt
@@ -118,13 +133,13 @@ callStmt
 		}
 	;
 
-// Set scope for atoms in expressions, but don't define them
+// Set scope for atoms in expressions and array references, but don't define them
 atom
 	@init {SLTreeNode t = (SLTreeNode)input.LT(1);}
-    :	{t.hasAncestor(EXPR)}?
+    :	{t.hasAncestor(EXPR) || t.hasAncestor(ARRAYREF) || t.hasParent(ASSIGN)}?
     	ID
        	{
-       		//System.out.println( "Setting scope of " + $ID.text + " to " + currentScope.getScopeName() );
+       		System.out.println( "Setting scope of " + $ID.text + " to " + currentScope.getScopeName() + " at line " + $ID.getLine() );
        		t.scope = currentScope;
        	}
 	;

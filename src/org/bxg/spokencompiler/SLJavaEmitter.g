@@ -87,6 +87,7 @@ expr
 	|	^(EXPR '*' e=expr e2=expr) -> expr(e1={$e.st},e2={$e2.st},op={"*"})
 	|	^(EXPR '/' e=expr e2=expr) -> expr(e1={$e.st},e2={$e2.st},op={"/"})
 	|	^(EXPR atom) -> {$atom.st}
+	|	^(EXPR arrayRef) -> {$arrayRef.st}
 	|	^(EXPR callExpr) -> {$callExpr.st}
 	;
 
@@ -95,6 +96,9 @@ callExpr
 	->	funcCall(func={$ID.text},args={$args})
 	;
 
+arrayRef
+	:	^(ARRAYREF expr ID) -> arrayRef(index={$expr.st},array={$ID.text})
+	;
 
 atom	:       INT		-> int_constant(val={$INT.text})
         |       FLOAT 		-> float_constant(val={$FLOAT.text})

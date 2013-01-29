@@ -34,7 +34,7 @@ options {
         }
     }
 
-    void constrainType( SLTreeNode node, VarType vType )
+    void constrainType( SLTreeNode node, VarType vType, boolean isArray )
     {
         if ( node.symbol == null ) {
             throw new CompileException( "Unresolved variable " + node.getText() + " at line " + node.getLine() );
@@ -56,7 +56,12 @@ options {
             VarType t = matchTypes( s.varType, vType, node );
             if ( t != VarType.UNKNOWN ) {
                 s.varType = t;
-				System.out.println( "Constraint: typeof(" + node.getText() + ") = " + vType );
+                if ( s.isArray && !isArray ) {
+					throw new CompileException( "Attempting to assign scalar to array " + node.getText() + " at line " + node.getLine() );
+				} else if ( !s.isArray && isArray ) {
+					throw new CompileException( "Attempting to assign array to scalar " + node.getText() + " at line " + node.getLine() );
+				}
+                System.out.println( "Constraint: typeof(" + node.getText() + ") = " + vType );
                 // FIXME: add constraint
             }
         }
@@ -65,7 +70,7 @@ options {
     void constrainTypeList( List<SLTreeNode> nodes, VarType vType )
     {
         for ( SLTreeNode n: nodes ) {
-            constrainType( n, vType );
+            constrainType( n, vType, false );
         }
     }
 
@@ -206,8 +211,17 @@ bottomup
 assignment
 	:	^(ASSIGN ID rhs=exprRoot) 
         {
-            constrainType( $ID, $rhs.type );
+            constrainType( $ID, $rhs.type, false );
             addConstraintList( $ID.symbol, $rhs.vars );
+            if ( $ID.evalType != VarType.UNKNOWN ) {
+                constrainTypeList( $rhs.vars, $ID.evalType );
+            }
+        }
+	|	^(ASSIGN ^(ARRAYREF idx=atom ID) rhs=exprRoot) 
+        {
+            constrainType( $ID, $rhs.type, true );
+            addConstraintList( $ID.symbol, $rhs.vars );
+            constrainTypeList( $idx.vars, VarType.INT );
             if ( $ID.evalType != VarType.UNKNOWN ) {
                 constrainTypeList( $rhs.vars, $ID.evalType );
             }

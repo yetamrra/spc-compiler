@@ -15,6 +15,7 @@ tokens {
     BLOCK;
 	EXPR;
 	PRINTLN;
+	ARRAYREF;
 }
 
 @header {
@@ -101,8 +102,7 @@ THE	:	'the' ;
 fragment
 RESULT	:	'result';
 
-fragment
-OF	:	'of';
+OF	:	'of' ;
 
 RESULT_OF
 	:	THE WS RESULT WS OF ;
@@ -110,6 +110,8 @@ RESULT_OF
 AND 	:	'and' ;
 
 RETURN	:	'return';
+
+ELEMENT	:	'element' ;
 
 ID  :	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
     ;
@@ -189,7 +191,9 @@ stmt
 	;
 
 assignment 
-	:	ASSIGN ID TO expr -> ^(ASSIGN ID expr)
+	:	ASSIGN arrayRef TO expr -> ^(ASSIGN arrayRef expr)
+	|	ASSIGN arrayRef TO callExpr -> ^(ASSIGN arrayRef callExpr)
+	|	ASSIGN ID TO expr -> ^(ASSIGN ID expr)
 	|	ASSIGN ID TO callExpr -> ^(ASSIGN ID callExpr)
 	;
 
@@ -244,17 +248,27 @@ expr
 	;
 
 multExpr
-	:	atom '*' atom
-	->	^(EXPR '*' ^(EXPR atom) ^(EXPR atom))
-	|	atom '/' atom
-	->	^(EXPR '/' ^(EXPR atom) ^(EXPR atom))
-	|	atom
-	->	^(EXPR atom)
+	:	varRef '*' varRef
+	->	^(EXPR '*' ^(EXPR varRef) ^(EXPR varRef))
+	|	varRef '/' varRef
+	->	^(EXPR '/' ^(EXPR varRef) ^(EXPR varRef))
+	|	varRef
+	->	^(EXPR varRef)
 	;
 
+varRef
+	:	atom
+	|	arrayRef
+	;
+	
 atom
 	:	INT | FLOAT | STRING | ID;
 
+arrayRef
+	:	ELEMENT atom OF ID
+	->	^(ARRAYREF atom ID)
+	;
+	
 callExpr
 	:	RESULT_OF callingStmt
 	->	^(EXPR callingStmt)

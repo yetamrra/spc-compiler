@@ -101,7 +101,7 @@ public class SpokenCompiler
 		SpokenCompiler c = new SpokenCompiler();
 		for ( String fileArg: args ) {
 			try {
-				c.compileFile( fileArg, "SLJavaEmitter.stg" );
+				c.compileFile( fileArg, "bin/SLJavaEmitter.stg" );
 			}
 			catch ( CompileException e ) {
 				System.err.println( "Error compiling " + fileArg + ": " + e.getMessage() );

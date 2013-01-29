@@ -9,14 +9,20 @@ enum VarType
     , FUNCTION
     , VOID
     , BOOLEAN
+    , ARRAY
     ;
 
+    public VarType subType;
+    
     public String toString()
     {
         switch ( this ) {
             case UNKNOWN:
                 return super.toString();
 
+            case ARRAY:
+            	return "array of " + subType.toString();
+            	
             default:
                 return super.toString().toLowerCase();
         }
@@ -31,6 +37,9 @@ enum VarType
             case STRING:
                 return "java.lang.String";
 
+            case ARRAY:
+            	return subType.getJavaType() + "[]";
+            	
             default:
                 return super.toString().toLowerCase();
         }
