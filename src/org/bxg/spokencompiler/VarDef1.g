@@ -99,7 +99,7 @@ assignment
             }
 			$ID.symbol = var;
 		}
-	|	^(ASSIGN ^(ARRAYREF idx=atom arr=ID) .)
+	|	^(ASSIGN ^(ARRAYREF . arr=ID) .)
 		{
 			SymEntry var = currentScope.resolve( $arr.text, false );
 			if ( var == null ) {
@@ -136,7 +136,7 @@ callStmt
 // Set scope for atoms in expressions and array references, but don't define them
 atom
 	@init {SLTreeNode t = (SLTreeNode)input.LT(1);}
-    :	{t.hasAncestor(EXPR) || t.hasAncestor(ARRAYREF) || t.hasParent(ASSIGN)}?
+    :	{t.hasAncestor(EXPR) || t.hasAncestor(ARRAYREF) || t.parent.getType() == ASSIGN}?
     	ID
        	{
        		System.out.println( "Setting scope of " + $ID.text + " to " + currentScope.getScopeName() + " at line " + $ID.getLine() );
