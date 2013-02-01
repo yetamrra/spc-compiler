@@ -231,7 +231,7 @@ assignment
 returnStmt
     :   ^(RETURN rhs=exprRoot)
         {
-            constrainType( currentFunction, $rhs.type );
+            constrainType( currentFunction, $rhs.type, false );
             addConstraintList( currentFunction.symbol, $rhs.vars );
         }
     ;
@@ -341,13 +341,13 @@ binaryOp returns [VarType type, List<SLTreeNode> vars]
 				$type = $a.start.evalType;
                 constrainTypeList( $b.vars, $type );
                 if ( $b.start.symbol != null ) {
-                    constrainType( $b.start, $a.start.evalType );
+                    constrainType( $b.start, $a.start.evalType, false );
                 }
 		   	} else {
 				$type = $b.start.evalType;
                 constrainTypeList( $a.vars, $type );
                 if ( $a.start.symbol != null ) {
-                    constrainType( $a.start, $b.start.evalType );
+                    constrainType( $a.start, $b.start.evalType, false );
                 }
 			}
             $vars = $a.vars;

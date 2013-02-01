@@ -47,7 +47,7 @@ whileStmt
 	
 printStmt
 	:	^(PRINT expr) 		-> printOut(string={$expr.st})
-	|	PRINTLN 		-> printOut(string={"\"\\n\""})
+	|	PRINTLN 			-> printOut(string={"\"\\n\""})
 	;
 
 callStmt
