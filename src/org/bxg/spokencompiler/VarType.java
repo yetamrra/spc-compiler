@@ -44,4 +44,24 @@ enum VarType
                 return super.toString().toLowerCase();
         }
     }
+    
+    public String getJavaObjectType()
+    {
+    	switch ( this ) {
+    		case UNKNOWN:
+    			return "UNKNOWN";
+    			
+    		case STRING:
+    			return "java.lang.String";
+    			
+    		case ARRAY:
+    			return subType.getJavaObjectType() + "[]";
+    			
+    		case INT:
+    			return "Integer";
+    			
+    		default:
+    			return "FIXME: " + super.toString();
+    	}
+    }
 };

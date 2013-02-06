@@ -66,7 +66,8 @@ ifStmt
 	;
 
 assignment
-		:		^(ASSIGN ^(ARRAYREF atom ID) expr) -> assign(name={$ID.text},value={$expr.st})
+		:		^(ASSIGN ^(ARRAYREF atom ID) expr) 	-> {$ID.symbol != null && $ID.symbol.definition == $ID}? newArray(type={$ID.symbol.varType},name={$ID.text},index={$atom.st},value={$expr.st})
+													-> arrayAssign(name={$ID.text},index={$atom.st},value={$expr.st})
         |       ^(ASSIGN ID expr) 	-> {$ID.symbol != null && $ID.symbol.definition == $ID}? assign(type={$ID.symbol.varType},name={$ID.text},value={$expr.st})
 									-> assign(name={$ID.text},value={$expr.st})
         ;
@@ -98,7 +99,7 @@ callExpr
 	;
 
 arrayRef
-	:	^(ARRAYREF expr ID) -> arrayRef(index={$expr.st},array={$ID.text})
+	:	^(ARRAYREF atom ID) -> arrayRef(index={$atom.st},array={$ID.text})
 	;
 
 atom	:       INT		-> int_constant(val={$INT.text})

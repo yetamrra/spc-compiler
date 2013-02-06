@@ -2,8 +2,30 @@ group SLJavaEmitter;
 
 program(name,fList) ::=
 <<
+import java.util.Vector;
+
 public class <name>
 {
+    static void array_safe_set( Vector\<Integer\> arr, int index, int value )
+    {
+    	if ( index >= arr.size() ) {
+    		int newSize = Math.max( arr.size()*2, index*2 );
+    		arr.setSize( newSize );
+    	}
+    	
+    	arr.set( index-1, value );
+    }
+    
+    static int array_safe_get( Vector\<Integer\> arr, int index )
+    {
+    	if ( index >= arr.size() ) {
+    		int newSize = Math.max( arr.size()*2, index*2 );
+    		arr.setSize( newSize );
+    	}
+    	
+    	return arr.get( index-1 );
+    }
+    
     static class SpokenProgram
     {
         <fList; separator="\n">
@@ -24,7 +46,15 @@ function(name,type,params,body,locals) ::=
 
 >>
 
+newArray(type,name,index,value) ::= 
+<<
+Vector\<<type.javaObjectType>\> <name> = new Vector\<<type.javaObjectType>\>();
+<arrayAssign(...)>
+>>
+
 assign(type,name,value) ::= "<if(type)><type.javaType> <endif><name> = <value>;"
+
+arrayAssign(name,index,value) ::= "array_safe_set(<name>,<index>,<value>);"
 
 block(body) ::=
 <<
@@ -51,7 +81,7 @@ ident(name) ::= "<name>"
 
 expr(e1,e2,op) ::= "(<e1>) <op> (<e2>)"
 
-arrayRef(index,array) ::= "<array>[<index>]"
+arrayRef(index,array) ::= "array_safe_get(<array>,<index>)"
 
 while(guard,body) ::=
 <<

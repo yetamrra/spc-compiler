@@ -1,0 +1,9 @@
+define function main taking no arguments as
+    set element 1 of A to 5
+    print element 1 of A
+	new line
+    set I to 2
+    set element I of A to 10
+    print element I of A
+	new line
+end function
