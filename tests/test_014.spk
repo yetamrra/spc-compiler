@@ -1,0 +1,5 @@
+define function main taking no arguments as
+    set element 1 of A to "Hello, Array World"
+    print element 1 of A
+    new line
+end function

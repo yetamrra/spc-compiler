@@ -26,6 +26,26 @@ public class <name>
     	return arr.get( index-1 );
     }
     
+    static void array_safe_set( Vector\<String\> arr, int index, String value )
+    {
+    	if ( index >= arr.size() ) {
+    		int newSize = Math.max( arr.size()*2, index*2 );
+    		arr.setSize( newSize );
+    	}
+    	
+    	arr.set( index-1, value );
+    }
+    
+    static String array_safe_get( Vector\<String\> arr, int index )
+    {
+    	if ( index >= arr.size() ) {
+    		int newSize = Math.max( arr.size()*2, index*2 );
+    		arr.setSize( newSize );
+    	}
+    	
+    	return arr.get( index-1 );
+    }
+
     static class SpokenProgram
     {
         <fList; separator="\n">
