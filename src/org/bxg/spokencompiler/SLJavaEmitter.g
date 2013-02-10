@@ -23,7 +23,8 @@ argList
 	;
 
 formalArg
-	:	ID	-> formal_arg(type={$ID.symbol.varType},name={$ID.text})
+	:	ID	-> {$ID.symbol.isArray}? formal_arg_array(type={$ID.symbol.varType},name={$ID.text})
+			-> formal_arg(type={$ID.symbol.varType},name={$ID.text})
 	;
 
 functionBody

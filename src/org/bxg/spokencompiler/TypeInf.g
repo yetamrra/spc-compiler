@@ -56,11 +56,13 @@ options {
             VarType t = matchTypes( s.varType, vType, node );
             if ( t != VarType.UNKNOWN ) {
                 s.varType = t;
+                // FIXME: figure out how to handle this properly
+                /*
                 if ( s.isArray && !isArray ) {
 					throw new CompileException( "Attempting to assign scalar to array `" + node.getText() + "` at line " + node.getLine() );
 				} else if ( !s.isArray && isArray ) {
 					throw new CompileException( "Attempting to assign array to scalar `" + node.getText() + "` at line " + node.getLine() );
-				}
+				}*/
                 System.out.println( "Constraint: typeof(" + node.getText() + ") = " + vType );
                 // FIXME: add constraint
             }
@@ -340,6 +342,7 @@ arrayRef returns [VarType type, List<SLTreeNode> vars]
 					throw new CompileException( "Unresolved array `" + $ID.text + "` encountered at line " + $ID.line );
 				}
 				$ID.symbol = s;
+				s.isArray = true;
 			}
 			
 			$type = $ID.symbol.varType;

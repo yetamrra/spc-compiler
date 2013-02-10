@@ -121,6 +121,8 @@ arglist(args) ::= "<args; separator=\", \">"
 
 formal_arg(type,name) ::= "<type.javaType> <name>"
 
+formal_arg_array(type,name) ::= "Vector\<<type.javaObjectType>\> <name>"
+
 string_constant(text) ::= "<text>"
 
 int_constant(val) ::= "<val>"
