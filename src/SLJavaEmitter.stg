@@ -52,7 +52,7 @@ public class <name>
 		return input.next();
 	}
 	
-	static int getintInput(Scanner input)
+	static int getIntegerInput(Scanner input)
 	{
 		return input.nextInt();
 	}

@@ -57,9 +57,9 @@ options {
             if ( t != VarType.UNKNOWN ) {
                 s.varType = t;
                 if ( s.isArray && !isArray ) {
-					throw new CompileException( "Attempting to assign scalar to array " + node.getText() + " at line " + node.getLine() );
+					throw new CompileException( "Attempting to assign scalar to array `" + node.getText() + "` at line " + node.getLine() );
 				} else if ( !s.isArray && isArray ) {
-					throw new CompileException( "Attempting to assign array to scalar " + node.getText() + " at line " + node.getLine() );
+					throw new CompileException( "Attempting to assign array to scalar `" + node.getText() + "` at line " + node.getLine() );
 				}
                 System.out.println( "Constraint: typeof(" + node.getText() + ") = " + vType );
                 // FIXME: add constraint
@@ -274,6 +274,7 @@ boolExpr returns [VarType type, List<SLTreeNode> vars]
 expr returns [VarType type, List<SLTreeNode> vars]
 	: atom { $type = $atom.type; $vars = $atom.vars; }
     | callStmt { $type = $callStmt.type; $vars = $callStmt.vars; }
+    | arrayRef { $type = $arrayRef.type; $vars = $arrayRef.vars; }
 	;
  
 enterFunction
@@ -300,7 +301,6 @@ exitFunction
         }
     ;
 
-// Set scope for atoms in expressions, but don't define them
 atom returns [VarType type, List<SLTreeNode> vars]
     @init { $vars = new ArrayList(); }
     @after { System.out.println( "Vars in " + $start.toStringTree() + ": " + $vars ); }
@@ -312,6 +312,9 @@ atom returns [VarType type, List<SLTreeNode> vars]
             System.out.println( "Found ID " + $ID.text );
 			if ( $ID.symbol == null ) {
 				SymEntry s = $ID.scope.resolve( $ID.text, false );
+				if ( s == null ) {
+					throw new CompileException( "Unresolved symbol `" + $ID.text + "` encountered at line " + $ID.line );
+				}
 				$ID.symbol = s;
 			}
 
@@ -325,6 +328,27 @@ atom returns [VarType type, List<SLTreeNode> vars]
         }
 	;
 
+arrayRef returns [VarType type, List<SLTreeNode> vars]
+	@init { $vars = new ArrayList(); }
+	@after { System.out.println( "Vars in " + $start.toStringTree() + ": " + $vars ); }
+	:	^(ARRAYREF atom ID)
+		{
+			System.out.println( "Found array ID " + $ID.text );
+			if ( $ID.symbol == null ) {
+				SymEntry s = $ID.scope.resolve( $ID.text, false );
+				if ( s == null ) {
+					throw new CompileException( "Unresolved array `" + $ID.text + "` encountered at line " + $ID.line );
+				}
+				$ID.symbol = s;
+			}
+			
+			$type = $ID.symbol.varType;
+			$vars.add( $ID );
+			
+			constrainTypeList( $atom.vars, VarType.INT );
+		}
+	;
+	
 binaryOp returns [VarType type, List<SLTreeNode> vars]
     @after { $start.evalType = $type; }
 	: 	binop a=exprRoot b=exprRoot 

@@ -55,7 +55,7 @@ readStmt
 	:	^(READ ID)						-> {$ID.symbol != null && $ID.symbol.definition == $ID}? readNewVar(type={$ID.symbol.varType},name={$ID.text})
 										-> readVar(name={$ID.text},type={$ID.symbol.varType}) 
 	|	^(READ ^(ARRAYREF atom ID))		-> {$ID.symbol != null && $ID.symbol.definition == $ID}? readNewArray(type={$ID.symbol.varType},name={$ID.text},index={$atom.st})
-										-> readArray(name={$ID.text},index={$atom.st})
+										-> readArray(name={$ID.text},index={$atom.st},type={$ID.symbol.varType})
 	;
 	
 callStmt
