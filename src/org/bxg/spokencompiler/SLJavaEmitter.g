@@ -31,13 +31,14 @@ functionBody
         ;
 
 stmt    
-	:       assignment -> {$assignment.st}
+	:   assignment -> {$assignment.st}
 	|	printStmt -> {$printStmt.st}
 	|	whileStmt -> {$whileStmt.st}
 	|	callStmt -> {$callStmt.st}
 	|	returnStmt -> {$returnStmt.st}
 	|	emptyStmt -> {$emptyStmt.st}
 	|	ifStmt -> {$ifStmt.st}
+	|	readStmt -> {$readStmt.st}
 	;
 
 whileStmt
@@ -50,6 +51,13 @@ printStmt
 	|	PRINTLN 			-> printOut(string={"\"\\n\""})
 	;
 
+readStmt
+	:	^(READ ID)						-> {$ID.symbol != null && $ID.symbol.definition == $ID}? readNewVar(type={$ID.symbol.varType},name={$ID.text})
+										-> readVar(name={$ID.text},type={$ID.symbol.varType}) 
+	|	^(READ ^(ARRAYREF atom ID))		-> {$ID.symbol != null && $ID.symbol.definition == $ID}? readNewArray(type={$ID.symbol.varType},name={$ID.text},index={$atom.st})
+										-> readArray(name={$ID.text},index={$atom.st})
+	;
+	
 callStmt
 	:	^(CALL ID args+=expr*)
 	->	funcStmt(func={$ID.text},args={$args})
@@ -79,8 +87,8 @@ emptyStmt
 	;
 
 boolExpr
-	:	^(o=CMPOP e1=expr e2=expr)
-	-> 	expr(e1={$e1.st},e2={$e2.st},op={$o.text})
+	:	^(o=CMPOP e1=expr e2=expr)		-> 	{$o.text.equals("=")}? expr(e1={$e1.st},e2={$e2.st},op={"=="})
+										->	expr(e1={$e1.st},e2={$e2.st},op={$o.text})
 	;
 
 expr

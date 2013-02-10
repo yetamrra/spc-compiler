@@ -42,6 +42,8 @@ NOTHING : 'nothing' ;
 
 PRINT : 'print' ;
 
+READ  : 'read' ;
+
 WHILE : 'while' ;
 
 DO : 'do' ;
@@ -182,6 +184,7 @@ functionList
 
 stmt 	
 	:	printStmt
+	|   readStmt
 	|	assignment
 	|	whileStmt
 	|	callStmt
@@ -201,6 +204,11 @@ printStmt
 	:	PRINT expr -> ^(PRINT expr)
     |   PRINT callExpr -> ^(PRINT callExpr)
 	|	NEW_LINE -> ^(PRINTLN)
+	;
+
+readStmt
+	:	READ ID -> ^(READ ID)
+	|	READ arrayRef -> ^(READ arrayRef)
 	;
 
 whileStmt

@@ -3,6 +3,7 @@ group SLJavaEmitter;
 program(name,fList) ::=
 <<
 import java.util.Vector;
+import java.util.Scanner;
 
 public class <name>
 {
@@ -46,8 +47,25 @@ public class <name>
     	return arr.get( index-1 );
     }
 
+	static String getStringInput(Scanner input)
+	{
+		return input.next();
+	}
+	
+	static int getintInput(Scanner input)
+	{
+		return input.nextInt();
+	}
+	
     static class SpokenProgram
     {
+    	private Scanner _input;
+    	
+    	public SpokenProgram()
+    	{
+    	    _input = new Scanner(System.in);
+    	}
+    	
         <fList; separator="\n">
     }
 
@@ -71,6 +89,18 @@ newArray(type,name,index,value) ::=
 Vector\<<type.javaObjectType>\> <name> = new Vector\<<type.javaObjectType>\>();
 <arrayAssign(...)>
 >>
+
+readNewVar(type,name) ::= "<type.javaType> <name> = get<type.javaObjectType>Input(this._input);"
+
+readVar(type,name) ::= "<name> = get<type.javaObjectType>Input(this._input);"
+
+readNewArray(type,name,index) ::=
+<<
+Vector\<<type.javaObjectType>\> <name> = new Vector\<<type.javaObjectType>\>();
+<arrayAssign(...)>
+>>
+
+readArray(type,name,index) ::= "array_safe_set(<name>,<index>,get<type.javaObjectType>Input(this._input));"
 
 assign(type,name,value) ::= "<if(type)><type.javaType> <endif><name> = <value>;"
 

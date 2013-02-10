@@ -187,14 +187,6 @@ options {
 
 // Topdown and bottomup tell ANTLR which rules
 // to process as it goes down and then up the tree.
-/*topdown
-    :   enterBlock
-    |	enterFunction
-    |	funcArgs
-    |	assignment
-    |	atom
-    ;*/
-
 topdown
     :   enterFunction
     ;

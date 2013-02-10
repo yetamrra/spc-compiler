@@ -20,6 +20,7 @@ topdown
     |	enterFunction
     |	funcArgs
     |	assignment
+    |	readStmt
     |   callStmt
     |	atom
     ;
@@ -116,6 +117,38 @@ assignment
 		}	
 	;
 
+readStmt
+	:	^(READ ID)
+		{
+			SymEntry var = currentScope.resolve( $ID.text, false );
+			if ( var == null ) {
+				var = new SymEntry( $ID.text, VarType.UNKNOWN, currentScope );
+				var.definition = $ID;
+				currentScope.define( var );
+			} else {
+                if ( var.varType == VarType.FUNCTION ) {
+                    throw new CompileException( "Attempted to read a value into function " + $ID.text + " at line " + $ID.line );
+                }
+            }
+			$ID.symbol = var;
+		}
+	|	^(READ ^(ARRAYREF . arr=ID))
+		{
+			SymEntry var = currentScope.resolve( $arr.text, false );
+			if ( var == null ) {
+				var = new SymEntry( $arr.text, VarType.UNKNOWN, currentScope );
+				var.isArray = true;
+				var.definition = $arr;
+				currentScope.define( var );
+			} else {
+                if ( var.varType == VarType.FUNCTION ) {
+                    throw new CompileException( "Attempted to assign a value to function " + $arr.text + " at line " + $arr.line );
+                }
+            }
+			$arr.symbol = var;
+		}	
+	;
+	
 callStmt
 	:	^(CALL ID .*)
 		{
@@ -136,7 +169,7 @@ callStmt
 // Set scope for atoms in expressions and array references, but don't define them
 atom
 	@init {SLTreeNode t = (SLTreeNode)input.LT(1);}
-    :	{t.hasAncestor(EXPR) || t.hasAncestor(ARRAYREF) || t.parent.getType() == ASSIGN}?
+    :	{t.hasAncestor(EXPR) || t.hasAncestor(ARRAYREF) || t.hasAncestor(READ) || t.parent.getType() == ASSIGN}?
     	ID
        	{
        		System.out.println( "Setting scope of " + $ID.text + " to " + currentScope.getScopeName() + " at line " + $ID.getLine() );
