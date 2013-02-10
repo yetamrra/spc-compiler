@@ -8,6 +8,7 @@ fi
 spkDir=$( dirname "$input" )
 spkFile=$( basename "$input" )
 class=${spkFile%.spk}
+inFile=$class.in
 output=$class.java
 compare=$class.expected
 testNum=${class#test_}
@@ -16,7 +17,11 @@ echo -n "$testNum: "
 ./spc "$input" >/dev/null
 if [ $? = 0 ]; then
     cd "$spkDir"
-    e=$( java $class )
+	if [ -f "$inFile" ]; then
+	    e=$( java $class < "$inFile" )
+	else
+    	e=$( java $class )
+	fi
     if echo "$e" | cmp -s "$compare" -; then
 	    echo "OK"
 	else

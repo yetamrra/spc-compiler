@@ -10,6 +10,7 @@ spkDir=$( dirname "$input" )
 spkFile=$( basename "$input" )
 class=${spkFile%.spk}
 output=$class.java
+inFile=$class.in
 compare=$class.expected
 testNum=${class#test_}
 topDir=$( dirname "$0" )
@@ -18,6 +19,10 @@ java -cp $topDir/lib/antlrworks-1.4.2.jar:$topDir/bin org.bxg.spokencompiler.Spo
 if [ $? = 0 ]; then
     echo "-- Running $class --"
     cd "$spkDir"
-    java $class
+	if [ -f $inFile ]; then
+	    java $class <$inFile
+	else
+    	java $class
+	fi
 	echo "-- Done -- "
 fi
