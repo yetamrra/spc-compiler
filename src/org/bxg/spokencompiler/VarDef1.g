@@ -11,6 +11,7 @@ options {
 
 @members {
     public Scope currentScope;
+    public FunctionSym currentFunction;
 }
 
 // Topdown and bottomup tell ANTLR which rules
@@ -61,6 +62,7 @@ enterFunction
 			
 			// Make new scope for the function
 			currentScope = new SymbolTable(currentScope, $ID.text);
+			currentFunction = (FunctionSym)sym;
 		}
     ;
 	
@@ -69,6 +71,7 @@ exitFunction
 	   	{
         	System.out.println("locals in " + currentScope.getScopeName() + ": "+currentScope);
         	currentScope = currentScope.getParentScope();
+        	currentFunction = null;
     	}
 	;
 	
@@ -81,6 +84,9 @@ funcArgs
 				sym.definition = var;
 				var.symbol = sym;
 				currentScope.define( sym );
+				
+				System.out.println( "Adding arg " + var + " to function " + currentFunction );
+				currentFunction.addArgument( sym );
 			}
 		}
 	;

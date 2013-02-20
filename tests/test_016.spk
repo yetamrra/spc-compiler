@@ -1,0 +1,17 @@
+define function main taking no arguments as
+    read X
+    call f with X
+end function
+
+define function f taking arguments n as
+    if n < 2 then
+	    print 1
+		new line
+        return 1
+	else
+	    set R to the result of calling f with n - 1
+		print R * n
+		new line
+		return R * n
+	end if
+end function

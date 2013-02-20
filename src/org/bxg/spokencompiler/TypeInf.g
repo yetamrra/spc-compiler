@@ -166,8 +166,14 @@ options {
 
     VarType getFuncType( SLTreeNode node )
     {
-        // Make sure node represents a function and then
-        // return its returnType.
+    	FunctionSym fun = getFunction( node );
+        return fun.returnType;
+    }
+    
+    FunctionSym getFunction( SLTreeNode node )
+    {
+    	// Make sure node represents a function and then
+        // return its symbol.
         if ( node.symbol == null ) {
             // Try to resolve the function.  It would have been previously skipped
             // if it was a forward reference.
@@ -180,11 +186,12 @@ options {
         }
         
         if ( node.symbol.varType == VarType.FUNCTION ) {
-            return ((FunctionSym)node.symbol).returnType;
+        	return (FunctionSym)node.symbol;
         } else {
-            throw new CompileException( "Can't call non-function symbol " + node.getText() + " at line " + node.getLine() );
+        	throw new CompileException( "Can't call non-function symbol " + node.getText() + " at line " + node.getLine() );
         }
     }
+    
 }
 
 // Topdown and bottomup tell ANTLR which rules
@@ -231,11 +238,24 @@ returnStmt
     ;
 
 callStmt returns [VarType type, List<SLTreeNode> vars]
-    :   ^(CALL ID .*)
+    :   ^(CALL ID args+=exprRoot*)
         {
             $type = $CALL.evalType = getFuncType($ID);
             $vars = new ArrayList();
             $vars.add( $ID );
+            
+            if ( $args != null && $args.size() > 0 ) {
+	            FunctionSym fun = getFunction( $ID );
+	            if ( $args.size() != fun.arguments.size() ) {
+	            	throw new CompileException( "Called function " + $ID.text + " with " + $args.size() + " arguments when " + fun.arguments.size() + " are needed at line " + $ID.line );
+	            }
+	            
+	            for ( int i=0; i<$args.size(); i++ ) {
+	            	exprRoot_return arg = (exprRoot_return)$args.get( i );
+	            	SymEntry formalArg = fun.arguments.get( i );
+	            	addConstraintList( formalArg, arg.vars );
+	            }
+	        }
         }
     ;
 
