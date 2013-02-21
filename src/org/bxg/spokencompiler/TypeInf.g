@@ -47,7 +47,7 @@ options {
             VarType t = matchTypes( f.returnType, vType, node );
             if ( t != VarType.UNKNOWN ) {
                 f.returnType = t;
-				System.out.println( "Constraint: typeof(" + node.getText() + ") = " + vType );
+				System.out.println( "Constraint: typeof(" + node.getText() + "()) = " + vType );
                 // FIXME: add constraint
             }
         } else {
@@ -293,6 +293,7 @@ boolExpr returns [VarType type, List<SLTreeNode> vars]
             }
         }
 	;
+
 expr returns [VarType type, List<SLTreeNode> vars]
 	: atom { $type = $atom.type; $vars = $atom.vars; }
     | callStmt { $type = $callStmt.type; $vars = $callStmt.vars; }

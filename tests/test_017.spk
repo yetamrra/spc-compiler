@@ -1,0 +1,7 @@
+define function main taking no arguments as
+	if 1 < 2 and 4 > 3 then
+		print 1
+	else
+		print 0
+	end if
+end function

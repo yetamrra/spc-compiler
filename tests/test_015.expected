@@ -1,15 +1,19 @@
+Step 1
 State 1
-Tape pointer 1
 Tape contents
 112
+^
+Step 2
 State 1
-Tape pointer 2
 Tape contents
 212
+ ^
+Step 3
 State 1
-Tape pointer 3
 Tape contents
 222
+  ^
 Program completed
 Tape contents
-221
+2210
+   ^

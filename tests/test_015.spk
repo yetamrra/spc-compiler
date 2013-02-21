@@ -1,4 +1,4 @@
-define function output taking arguments tape and length as
+define function output taking arguments tape and length and pointer as
     print "Tape contents"
     new line
     set I to 1
@@ -8,11 +8,19 @@ define function output taking arguments tape and length as
         set I to I + 1
     end while
     new line
+    set I to 1
+    while I < pointer do
+		print " "
+		set I to I + 1
+	end while
+	print "^"
+	new line
 end function
 
 define function main taking no arguments as
 	read N
 	read M
+	read Q
 	set I to 0
 	set done to 0
 	set S to N * N 
@@ -23,28 +31,19 @@ define function main taking no arguments as
 	while done = 0 do
 	    read state
 	    read symbol
-	    if state = 0 then
-	        if symbol = 0 then
-	            set done to 1
-	        else
-	            nothing
-	        end if
+	    if state = 0 and symbol = 0 then
+            set done to 1
 	    else
-			nothing
-		end if
-		if done = 0 then
 		    set row to state - 1
 			set index to row * N + symbol
 		    read element index of update
 		    read element index of move
 		    read element index of next
 			set I to I + 1
-		else
-			nothing
 		end if
 	end while
 
-	set element 1 of tape to 1
+	set element 1 of tape to 0
 	set I to 1
 	set done to 0
 	while done = 0 do
@@ -59,43 +58,38 @@ define function main taking no arguments as
 		
 	set max to I - 1
 	set pointer to 1
-	set state to 1
+	set state to Q
 	set done to 0
 	set step to 1
 	while done = 0 do
+		set row to state - 1
+		set col to element pointer of tape
+		set index to row * N + col
+		print "Step "
+		print step
+		new line
+		print "State "
+		print state
+		new line
+		call output with tape and max and pointer
+		set element pointer of tape to element index of update
+		set pointer to pointer + element index of move
+		set state to element index of next
 	    if pointer > max then
-	    	set element pointer of tape to 1
+	    	set element pointer of tape to 0
 			set max to pointer
 		else
 			nothing
 		end if
-		set row to state - 1
-		set col to element pointer of tape
-		set index to row * N + col
-		print "State "
-		print state
-		new line
-		print "Tape pointer "
-		print pointer
-		new line
-		call output with tape and max
-		set element pointer of tape to element index of update
-		set pointer to pointer + element index of move
-		set state to element index of next
 		if state = 0 then
 			set done to 1
 		else
 			nothing
 		end if
 		set step to step + 1
-	    if step > 10 then
-	        set done to 1
-	    else
-			nothing
-		end if
 	end while
 	
 	print "Program completed"
 	new line
-	call output with tape and max
+	call output with tape and max and pointer
 end function

@@ -111,6 +111,14 @@ RESULT_OF
 
 AND 	:	'and' ;
 
+NOT		:	'not' ;
+
+OR		:	'or' ;
+
+boolOp	:	AND
+		|	OR
+		;
+		
 RETURN	:	'return';
 
 ELEMENT	:	'element' ;
@@ -242,17 +250,19 @@ ifStmt
 	;
 
 boolExpr
-	:	expr CMPOP expr
-	->  ^(CMPOP expr expr)
+	:	primBool boolOp primBool -> ^(boolOp primBool primBool)
+	|	NOT boolExpr			 -> ^(NOT boolExpr)
+	|	primBool 				 -> primBool
 	;
 
+primBool
+	:	expr CMPOP expr	->  ^(CMPOP expr expr)
+	;
+	
 expr
-	:	multExpr '+' multExpr
-	->	^(EXPR '+' multExpr multExpr)
-	|	multExpr '-' multExpr
-	->	^(EXPR '-' multExpr multExpr)
-	|	multExpr
-	->	multExpr
+	:	multExpr '+' multExpr 	->	^(EXPR '+' multExpr multExpr)
+	|	multExpr '-' multExpr 	->	^(EXPR '-' multExpr multExpr)
+	|	multExpr				->	multExpr
 	;
 
 multExpr

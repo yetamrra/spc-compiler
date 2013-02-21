@@ -88,10 +88,17 @@ emptyStmt
 	;
 
 boolExpr
-	:	^(o=CMPOP e1=expr e2=expr)		-> 	{$o.text.equals("=")}? expr(e1={$e1.st},e2={$e2.st},op={"=="})
-										->	expr(e1={$e1.st},e2={$e2.st},op={$o.text})
+	:	^(o=AND e1=primBool e2=primBool)	->  expr(e1={$e1.st},e2={$e2.st},op={"&&"})
+	|	^(o=OR e1=primBool e2=primBool)		->  expr(e1={$e1.st},e2={$e2.st},op={"||"})
+	|	^(o=NOT e1=primBool)				->  not(e={$e1.st})
+	|	primBool							->	{$primBool.st}
 	;
 
+primBool
+	:	^(o=CMPOP e1=expr e2=expr)			-> 	{$o.text.equals("=")}? expr(e1={$e1.st},e2={$e2.st},op={"=="})
+											->	expr(e1={$e1.st},e2={$e2.st},op={$o.text})
+	;
+	
 expr
 	:	^(EXPR '+' e=expr e2=expr) -> expr(e1={$e.st},e2={$e2.st},op={"+"})
 	|	^(EXPR '-' e=expr e2=expr) -> expr(e1={$e.st},e2={$e2.st},op={"-"})
