@@ -6,6 +6,9 @@ options {
   
   // Java type of the tree
   ASTLabelType = SLTreeNode;
+  
+  backtrack = true;
+  
 }
 // These are imaginary tokens that will serve as parent nodes
 // for grouping other tokens in our AST.
@@ -24,6 +27,16 @@ tokens {
 
 @lexer::header {
 	package org.bxg.spokencompiler;
+}
+
+@lexer::members {
+	String fixString( String str )
+	{
+		System.out.println("Fixing string: " + str );
+		String ret = str.replace( "\\", "\\\\" );
+		ret = '"' + ret + '"';
+		return ret;
+	}
 }
 
 @members {
@@ -146,6 +159,10 @@ STRING
     :  '"' ( ESC_SEQ | ~('\\'|'"') )* '"'
     ;
 
+THE_STRING
+	:	THE WS 'string'
+	;
+	
 fragment
 EXPONENT : ('e'|'E') ('+'|'-')? ('0'..'9')+ ;
 
@@ -177,6 +194,12 @@ CMPOP
 	|	'='
 	;
 
+WORDS
+	:	THE_STRING WS { StringBuilder s = new StringBuilder(); }
+	    ( options {greedy=false;} : w=. {s.append((char)$w);} )* '\n'
+	    { setText(fixString(s.toString())); }
+	;
+	
 /*******************************************************
  ** End of Lexer Grammar 
  *******************************************************/
@@ -280,7 +303,7 @@ varRef
 	;
 	
 atom
-	:	INT | FLOAT | STRING | ID;
+	:	INT | FLOAT | WORDS | STRING | ID;
 
 arrayRef
 	:	ELEMENT atom OF ID

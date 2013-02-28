@@ -1,5 +1,5 @@
 define function main taking no arguments as
-    set X to "Hello, World!"
+    set X to the string Hello, World!
     print X
     new line
 end function
