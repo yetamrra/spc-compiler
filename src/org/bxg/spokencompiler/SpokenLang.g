@@ -19,6 +19,7 @@ tokens {
 	EXPR;
 	PRINTLN;
 	ARRAYREF;
+	PRINTSPACE;
 }
 
 @header {
@@ -233,6 +234,7 @@ assignment
 
 printStmt
 	:	PRINT expr -> ^(PRINT expr)
+	|	PRINT 'space' -> ^(PRINTSPACE)
     |   PRINT callExpr -> ^(PRINT callExpr)
 	|	NEW_LINE -> ^(PRINTLN)
 	;

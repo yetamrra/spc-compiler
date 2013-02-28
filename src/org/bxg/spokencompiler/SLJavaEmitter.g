@@ -50,6 +50,7 @@ whileStmt
 printStmt
 	:	^(PRINT expr) 		-> printOut(string={$expr.st})
 	|	PRINTLN 			-> printOut(string={"\"\\n\""})
+	|	PRINTSPACE			-> printOut(string={"\" \""})
 	;
 
 readStmt
@@ -122,4 +123,5 @@ atom	:       INT		-> int_constant(val={$INT.text})
         |       FLOAT 		-> float_constant(val={$FLOAT.text})
         |       STRING		-> string_constant(text={$STRING.text})
         |       ID 		-> ident(name={$ID.text})
+        |		WORDS	-> string_constant(text={$WORDS.text})
         ;

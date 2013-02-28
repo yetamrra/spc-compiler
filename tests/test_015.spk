@@ -1,5 +1,5 @@
 define function output taking arguments tape and length and pointer as
-    print "Tape contents"
+    print the string Tape contents
     new line
     set I to 1
     while I < length+1 do
@@ -10,10 +10,10 @@ define function output taking arguments tape and length and pointer as
     new line
     set I to 1
     while I < pointer do
-		print " "
+		print space
 		set I to I + 1
 	end while
-	print "^"
+	print the string ^
 	new line
 end function
 
@@ -65,10 +65,12 @@ define function main taking no arguments as
 		set row to state - 1
 		set col to element pointer of tape
 		set index to row * N + col
-		print "Step "
+		print the string Step
+		print space
 		print step
 		new line
-		print "State "
+		print the string State
+		print space
 		print state
 		new line
 		call output with tape and max and pointer
@@ -89,7 +91,7 @@ define function main taking no arguments as
 		set step to step + 1
 	end while
 	
-	print "Program completed"
+	print the string Program completed
 	new line
 	call output with tape and max and pointer
 end function

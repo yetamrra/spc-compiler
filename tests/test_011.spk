@@ -10,14 +10,16 @@ end function
 
 define function main taking no arguments as
     set e to 20
-    print "The first "
+    print the string The first
+	print space
     print e
-    print " fibonacci numbers:"
+	print space
+    print the string fibonacci numbers:
     new line
     set x to 1
     while x < e do
         print the result of calling fib with x
-        print " "
+        print space
         set x to x + 1
     end while
     new line

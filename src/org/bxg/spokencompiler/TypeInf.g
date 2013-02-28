@@ -330,6 +330,7 @@ atom returns [VarType type, List<SLTreeNode> vars]
 	:	INT 	{ $type = VarType.INT; }
 	|	FLOAT 	{ $type = VarType.FLOAT; }
 	|	STRING 	{ $type = VarType.STRING; }
+	|	WORDS	{ $type = VarType.STRING; }
 	|	ID		
 		{ 
             System.out.println( "Found ID " + $ID.text );
