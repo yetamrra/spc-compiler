@@ -1,0 +1,18 @@
+define function m taking arguments f and x as
+    return element x of f
+end function
+
+define function main taking no arguments as
+    read X
+    set element 1 of f to 1
+    set element 2 of f to 1
+    set N to 3
+    while N < X+1 do
+        set z to the result of calling m with f and N - 2
+        set i to the result of calling m with f and N - 1
+        set element N of f to z + i
+		set N to N + 1
+    end while
+    print f
+    new line
+end function
