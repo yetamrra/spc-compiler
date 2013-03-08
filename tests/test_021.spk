@@ -1,0 +1,30 @@
+define function sort taking arguments a and n as
+	set i to 1
+	while i < n do
+		set j to i + 1
+		while j < n+1 do
+			if element i of a > element j of a then
+				set x to element i of a
+				set element i of a to element j of a
+				set element j of a to x
+			else
+				nothing
+			end if
+			set j to j + 1
+		end while
+		set i to i + 1
+	end while
+
+	print a
+end function
+
+define function main taking no arguments as
+	set i to 1
+	set element 1 of X to 0
+	while i < 11 do
+		read element i of X
+		set i to i + 1
+	end while
+
+	call sort with X and 10
+end function

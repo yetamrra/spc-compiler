@@ -10,7 +10,7 @@ public class <name>
     static void array_safe_set( Vector\<Integer\> arr, int index, int value )
     {
     	if ( index >= arr.size() ) {
-    		int newSize = Math.max( arr.size()*2, index*2 );
+    		int newSize = Math.max( arr.size(), index );
     		arr.setSize( newSize );
     	}
     	
@@ -20,7 +20,7 @@ public class <name>
     static int array_safe_get( Vector\<Integer\> arr, int index )
     {
     	if ( index >= arr.size() ) {
-    		int newSize = Math.max( arr.size()*2, index*2 );
+    		int newSize = Math.max( arr.size(), index );
     		arr.setSize( newSize );
     	}
     	
@@ -30,7 +30,7 @@ public class <name>
     static void array_safe_set( Vector\<String\> arr, int index, String value )
     {
     	if ( index >= arr.size() ) {
-    		int newSize = Math.max( arr.size()*2, index*2 );
+    		int newSize = Math.max( arr.size(), index );
     		arr.setSize( newSize );
     	}
     	
@@ -40,7 +40,7 @@ public class <name>
     static String array_safe_get( Vector\<String\> arr, int index )
     {
     	if ( index >= arr.size() ) {
-    		int newSize = Math.max( arr.size()*2, index*2 );
+    		int newSize = Math.max( arr.size(), index );
     		arr.setSize( newSize );
     	}
     	
