@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class <name>
 {
-    static void array_safe_set( Vector\<Integer\> arr, int index, int value )
+    static void array_safe_setInteger( Vector\<Integer\> arr, int index, int value )
     {
     	if ( index >= arr.size() ) {
     		int newSize = Math.max( arr.size(), index );
@@ -17,7 +17,7 @@ public class <name>
     	arr.set( index-1, value );
     }
     
-    static int array_safe_get( Vector\<Integer\> arr, int index )
+    static int array_safe_getInteger( Vector\<Integer\> arr, int index )
     {
     	if ( index >= arr.size() ) {
     		int newSize = Math.max( arr.size(), index );
@@ -27,7 +27,7 @@ public class <name>
     	return arr.get( index-1 );
     }
     
-    static void array_safe_set( Vector\<String\> arr, int index, String value )
+    static void array_safe_setString( Vector\<String\> arr, int index, String value )
     {
     	if ( index >= arr.size() ) {
     		int newSize = Math.max( arr.size(), index );
@@ -37,7 +37,7 @@ public class <name>
     	arr.set( index-1, value );
     }
     
-    static String array_safe_get( Vector\<String\> arr, int index )
+    static String array_safe_getString( Vector\<String\> arr, int index )
     {
     	if ( index >= arr.size() ) {
     		int newSize = Math.max( arr.size(), index );
@@ -100,11 +100,11 @@ Vector\<<type.javaObjectType>\> <name> = new Vector\<<type.javaObjectType>\>();
 <arrayAssign(...)>
 >>
 
-readArray(type,name,index) ::= "array_safe_set(<name>,<index>,get<type.javaObjectType>Input(this._input));"
+readArray(type,name,index) ::= "array_safe_set<type.javaObjectType>(<name>,<index>,get<type.javaObjectType>Input(this._input));"
 
 assign(type,name,value) ::= "<if(type)><type.javaType> <endif><name> = <value>;"
 
-arrayAssign(name,index,value) ::= "array_safe_set(<name>,<index>,<value>);"
+arrayAssign(type,name,index,value) ::= "array_safe_set<type.javaObjectType>(<name>,<index>,<value>);"
 
 block(body) ::=
 <<
@@ -135,7 +135,7 @@ expr(e1,e2,op) ::= "(<e1>) <op> (<e2>)"
 
 not(e) ::= "!(<e>)"
 
-arrayRef(index,array) ::= "array_safe_get(<array>,<index>)"
+arrayRef(type,index,array) ::= "array_safe_get<type.javaObjectType>(<array>,<index>)"
 
 while(guard,body) ::=
 <<

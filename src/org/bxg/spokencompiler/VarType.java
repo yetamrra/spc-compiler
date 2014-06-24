@@ -52,7 +52,7 @@ enum VarType
     			return "UNKNOWN";
     			
     		case STRING:
-    			return "java.lang.String";
+    			return "String";
     			
     		case ARRAY:
     			return subType.getJavaObjectType() + "[]";
