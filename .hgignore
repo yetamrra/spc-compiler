@@ -10,3 +10,4 @@ hello.java
 .*.swp
 tests/*.java
 bin
+lib/antlr*.jar

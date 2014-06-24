@@ -1,4 +1,4 @@
-CLASSPATH=antlr-3.4-complete.jar:.
+CLASSPATH=antlr-3.5.2-complete.jar:.
 ANTLRFLAGS=
 
 %.class : %.java

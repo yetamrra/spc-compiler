@@ -15,7 +15,7 @@ compare=$class.expected
 testNum=${class#test_}
 topDir=$( dirname "$0" )
 
-java -cp $topDir/lib/antlrworks-1.4.2.jar:$topDir/bin org.bxg.spokencompiler.SpokenCompiler "$input"
+java -cp $topDir/lib/antlr-3.5.2-complete.jar:$topDir/bin org.bxg.spokencompiler.SpokenCompiler "$input"
 if [ $? = 0 ]; then
     echo "-- Running $class --"
     cd "$spkDir"
