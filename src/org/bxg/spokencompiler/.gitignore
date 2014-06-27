@@ -1,0 +1,6 @@
+*.tokens
+SLJavaEmitter.java
+SpokenLangLexer.java
+SpokenLangParser.java
+TypeInf.java
+VarDef1.java
