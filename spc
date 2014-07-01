@@ -10,6 +10,7 @@ spkDir=$( dirname "$input" )
 spkFile=$( basename "$input" )
 class=${spkFile%.spk}
 output=$class.java
+jar=$class.jar
 inFile=$class.in
 compare=$class.expected
 testNum=${class#test_}
@@ -20,9 +21,9 @@ if [ $? = 0 ]; then
     echo "-- Running $class --"
     cd "$spkDir"
 	if [ -f $inFile ]; then
-	    java $class <$inFile
+	    java -jar $jar <$inFile
 	else
-    	java $class
+    	java -jar $jar
 	fi
 	echo "-- Done -- "
 fi

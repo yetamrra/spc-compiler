@@ -26,6 +26,10 @@ import org.antlr.stringtemplate.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
@@ -39,8 +43,10 @@ public class SpokenCompiler
 		// Figure out file names
 		String inName = fileName;
 		String className = inName.replaceAll("(.*/)?([^/]+)\\.spk$","$2");
-		String outName = inName.replaceAll( "\\.spk$", ".java" );
-		String outPath = null;
+		String jarName = inName.replaceAll( "\\.spk$", ".jar" );
+		String genJavaName = className + ".java";
+		String tmpPath = null;
+		File tmpDir = null;
 
 		// Read string templates
 		FileReader tr = new FileReader( templateName );
@@ -93,13 +99,14 @@ public class SpokenCompiler
 			}
 	
 			// Produce intermediate output into java file in a temporary directory
-			Path tmpDir = Files.createTempDirectory("spc");
-			outPath = tmpDir.toString() + File.separator + outName;
-			tmpDir.toFile().deleteOnExit();
+			Path tmpDirPath = Files.createTempDirectory("spc");
+			tmpPath = tmpDirPath.toString() + File.separator + genJavaName;
+			tmpDir = tmpDirPath.toFile();
+			tmpDir.deleteOnExit();
 			StringTemplate output = (StringTemplate)strTmpl.getTemplate();
 			System.out.println( output.toStructureString() );
 			//System.out.println( output.toString() );
-			FileWriter outFile = new FileWriter( outPath );
+			FileWriter outFile = new FileWriter( tmpPath );
 			outFile.write( output.toString() );
 			outFile.close();
 		}
@@ -107,17 +114,35 @@ public class SpokenCompiler
 			throw new CompileException( e.getMessage() );
 		}
 
-		System.out.println( "-- Compiling " + outName + " --" );
+		System.out.println( "-- Compiling " + genJavaName + " --" );
 		// Run the Java compiler on the intermediate file
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-		int results = compiler.run( null, null, null, outPath );
+		int results = compiler.run( null, null, null, tmpPath );
 		if ( results != 0 ) {
-			throw new CompileException("Compile failed.  Intermediate output in " + outPath);
+			throw new CompileException("Compile failed.  Intermediate output in " + tmpPath);
 		}
 
-		// FIXME: Pull the files from the tmpdir back into a jar
+		// Pull the files from the tmpdir back into a jar
+		Manifest mf = new Manifest();
+		mf.getMainAttributes().put( Attributes.Name.MANIFEST_VERSION, "1.0" );
+		mf.getMainAttributes().put( Attributes.Name.MAIN_CLASS, className );
+		JarOutputStream jar = new JarOutputStream( new FileOutputStream(jarName), mf );
+		for ( File classFile: tmpDir.listFiles() ) {
+			if ( !classFile.getName().endsWith(".class") ) {
+				// Clean up extra files
+				classFile.delete();
+				continue;
+			}
+			JarEntry entry = new JarEntry(classFile.getName());
+			entry.setTime(classFile.lastModified());
+		    jar.putNextEntry(entry);
+		    Files.copy( classFile.getAbsoluteFile().toPath(), jar );
+		    jar.closeEntry();
+		    classFile.delete();	// Clean up temporary files
+		}
+		jar.close();
 		
-		System.out.println( "-- Succeeded.  Output in " + className + ".class --" );		
+		System.out.println( "-- Succeeded.  Output in " + jarName + " --" );		
 	}
 	
 	public static void main( String[] args ) throws Exception
