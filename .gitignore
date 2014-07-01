@@ -1,5 +1,5 @@
 /bin/
-/tests/*.class
 /tests/*.jar
 /lib/*.jar
 .*.swp
+*.class

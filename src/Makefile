@@ -4,7 +4,7 @@ ANTLRFLAGS=
 %.class : %.java
 	javac -cp $(CLASSPATH) $<
 
-all: org/bxg/spokencompiler
+all:
 	$(MAKE) -C org/bxg/spokencompiler
 
 clean:
