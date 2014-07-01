@@ -22,7 +22,10 @@ package org.bxg.spokencompiler;
 import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;
 import org.antlr.stringtemplate.*;
+
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
@@ -37,6 +40,7 @@ public class SpokenCompiler
 		String inName = fileName;
 		String className = inName.replaceAll("(.*/)?([^/]+)\\.spk$","$2");
 		String outName = inName.replaceAll( "\\.spk$", ".java" );
+		String outPath = null;
 
 		// Read string templates
 		FileReader tr = new FileReader( templateName );
@@ -88,12 +92,14 @@ public class SpokenCompiler
 				throw new CompileException("Error parsing AST");
 			}
 	
-			// Produce intermediate output into java file
-			// FIXME: write to tmp file instead of hardcoded name
+			// Produce intermediate output into java file in a temporary directory
+			Path tmpDir = Files.createTempDirectory("spc");
+			outPath = tmpDir.toString() + File.separator + outName;
+			tmpDir.toFile().deleteOnExit();
 			StringTemplate output = (StringTemplate)strTmpl.getTemplate();
 			System.out.println( output.toStructureString() );
 			//System.out.println( output.toString() );
-			FileWriter outFile = new FileWriter( outName );
+			FileWriter outFile = new FileWriter( outPath );
 			outFile.write( output.toString() );
 			outFile.close();
 		}
@@ -104,14 +110,13 @@ public class SpokenCompiler
 		System.out.println( "-- Compiling " + outName + " --" );
 		// Run the Java compiler on the intermediate file
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-		int results = compiler.run( null, null, null, outName );
+		int results = compiler.run( null, null, null, outPath );
 		if ( results != 0 ) {
-			throw new CompileException("Compile failed.  Intermediate output in " + outName);
+			throw new CompileException("Compile failed.  Intermediate output in " + outPath);
 		}
 
-		// Remove the intermediate file if the compile succeeded
-		File f = new File( outName );
-		f.delete();
+		// FIXME: Pull the files from the tmpdir back into a jar
+		
 		System.out.println( "-- Succeeded.  Output in " + className + ".class --" );		
 	}
 	
