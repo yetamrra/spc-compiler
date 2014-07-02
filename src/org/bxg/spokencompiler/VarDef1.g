@@ -60,7 +60,7 @@ enterBlock
 exitBlock
     :   BLOCK
     	{
-        	System.out.println("locals in " + currentScope.getScopeName() + ": "+currentScope);
+        	//System.out.println("locals in " + currentScope.getScopeName() + ": "+currentScope);
         	currentScope = currentScope.getParentScope();
     	}
     ;
@@ -88,7 +88,7 @@ enterFunction
 exitFunction
 	:	FUNCTION
 	   	{
-        	System.out.println("locals in " + currentScope.getScopeName() + ": "+currentScope);
+        	//System.out.println("locals in " + currentScope.getScopeName() + ": "+currentScope);
         	currentScope = currentScope.getParentScope();
         	currentFunction = null;
     	}
@@ -104,7 +104,7 @@ funcArgs
 				var.symbol = sym;
 				currentScope.define( sym );
 				
-				System.out.println( "Adding arg " + var + " to function " + currentFunction );
+				//System.out.println( "Adding arg " + var + " to function " + currentFunction );
 				currentFunction.addArgument( sym );
 			}
 		}
@@ -197,7 +197,7 @@ atom
     :	{t.hasAncestor(EXPR) || t.hasAncestor(ARRAYREF) || t.hasAncestor(READ) || t.parent.getType() == ASSIGN}?
     	ID
        	{
-       		System.out.println( "Setting scope of " + $ID.text + " to " + currentScope.getScopeName() + " at line " + $ID.getLine() );
+       		//System.out.println( "Setting scope of " + $ID.text + " to " + currentScope.getScopeName() + " at line " + $ID.getLine() );
        		t.scope = currentScope;
        	}
 	;

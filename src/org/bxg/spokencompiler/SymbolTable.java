@@ -41,33 +41,12 @@ class SymbolTable implements Scope
     	this.name = name;
         symbols = new HashMap<String,SymEntry>();
         children = new LinkedList<Scope>();
-        System.out.println( "Created SymbolTable " + name + (parent == null ? "" : " inside parent " + parent.getScopeName()) );
     }
 
     public void addChild( Scope child )
     {
         children.add( child );
     }
-
-	/*
-	public void add( String name, SymEntry theType, boolean declare )
-	{
-	    String key = name.toUpperCase();
-        if ( symbols.containsKey(key) ) {
-			SymEntry e = symbols.get(key);
-            if ( e.varType == VarType.UNKNOWN ) {
-				e.varType = theType;
-                symbols.put( key, e );
-            } else if ( e.varType != theType ) {
-				// FIXME: mismatched types
-			}
-        } else {
-			SymEntry e = new SymEntry();
-			e.varType = theType;
-			e.needsDeclaration = declare;
-			symbols.put( key, e );
-		}
-	}*/
 
 	public String toStringNested( int indent )
 	{

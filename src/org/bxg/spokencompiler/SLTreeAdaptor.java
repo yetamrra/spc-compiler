@@ -35,14 +35,5 @@ public class SLTreeAdaptor extends CommonTreeAdaptor
 		}
 		return create(((SLTreeNode)t).token);
 	}
-	
-	/*
-	public Object errorNode(TokenStream input, Token start, Token stop,
-			RecognitionException e)
-	{
-		CymbolErrorNode t = new CymbolErrorNode(input, start, stop, e);
-		//System.out.println("returning error node '"+t+"' @index="+input.index());
-		return t;
-	}*/
 };
 

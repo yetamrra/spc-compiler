@@ -67,7 +67,7 @@ public class SpokenCompiler
 				throw new CompileException("Error parsing input");
 			}
 			SLTreeNode t = (SLTreeNode)ast.getTree();
-			System.out.println( "AST: " + t.toStringTree() );
+			//System.out.println( "AST: " + t.toStringTree() );
 	
 			// Walk tree to do variable resolution
 			System.out.println( "-- Resolving symbol references --" );
@@ -80,13 +80,13 @@ public class SpokenCompiler
 			nodes.reset(); // rewind AST node stream to root
 			//Ref ref = new Ref(nodes);               // Pass 2 - resolve references
 			//ref.downup(t);                          // Do pass 2
-			System.out.println( symTree.toStringNested(0) );
+			//System.out.println( symTree.toStringNested(0) );
 	
 			System.out.println( "-- Inferring types --" );
 			TypeInf ti = new TypeInf(nodes);
 			ti.downup(t);
 			ti.processConstraints( true );  // process outstanding type constraints
-			System.out.println( symTree.toStringNested(0) );
+			//System.out.println( symTree.toStringNested(0) );
 	
 			System.out.println( "-- Generating code --" );
 			// Generate output into String variable
@@ -104,8 +104,7 @@ public class SpokenCompiler
 			tmpDir = tmpDirPath.toFile();
 			tmpDir.deleteOnExit();
 			StringTemplate output = (StringTemplate)strTmpl.getTemplate();
-			System.out.println( output.toStructureString() );
-			//System.out.println( output.toString() );
+			//System.out.println( output.toStructureString() );
 			FileWriter outFile = new FileWriter( tmpPath );
 			outFile.write( output.toString() );
 			outFile.close();

@@ -66,7 +66,7 @@ options {
             VarType t = matchTypes( f.returnType, vType, node );
             if ( t != VarType.UNKNOWN ) {
                 f.returnType = t;
-				System.out.println( "Constraint: typeof(" + node.getText() + "()) = " + vType );
+				//System.out.println( "Constraint: typeof(" + node.getText() + "()) = " + vType );
                 // FIXME: add constraint
             }
         } else {
@@ -82,7 +82,7 @@ options {
 				} else if ( !s.isArray && isArray ) {
 					throw new CompileException( "Attempting to assign array to scalar `" + node.getText() + "` at line " + node.getLine() );
 				}*/
-                System.out.println( "Constraint: typeof(" + node.getText() + ") = " + vType );
+                //System.out.println( "Constraint: typeof(" + node.getText() + ") = " + vType );
                 // FIXME: add constraint
             }
         }
@@ -106,12 +106,12 @@ options {
     {
         VarConstraint v = new VarConstraint(lhs,rhs);
         constraints.add( v  );
-        System.out.println( "New constraint: " + v );
+        //System.out.println( "New constraint: " + v );
     }
 
     void processConstraints( boolean isFinal )
     {
-        System.out.println( "Processing constraints" + (isFinal ? " at the end" : "") + ": " + constraints );
+        //System.out.println( "Processing constraints" + (isFinal ? " at the end" : "") + ": " + constraints );
         while ( constraints.size() > 0 ) {
             int s = constraints.size();
             Iterator i = constraints.iterator();
@@ -158,7 +158,7 @@ options {
                 } else {
                     v1.varType = t2;
                 }
-                System.out.println( "Solved constraint: typeof(" + v1.scope.getScopeName() + "::" + v1.name + ") = " + t2 );
+                //System.out.println( "Solved constraint: typeof(" + v1.scope.getScopeName() + "::" + v1.name + ") = " + t2 );
                 return true;
             }
         } else {
@@ -168,15 +168,15 @@ options {
                 } else {
                     v2.varType = t1;
                 }
-                System.out.println( "Solved constraint: typeof(" + v2.scope.getScopeName() + "::" + v2.name + ") = " + t1 );
+                //System.out.println( "Solved constraint: typeof(" + v2.scope.getScopeName() + "::" + v2.name + ") = " + t1 );
                 return true;
             } else {
                 if ( t1 != t2 ) {
                     throw new CompileException( "Types of " + v1 + " and " + v2 + " are not compatible." );
                 } else {
-                    System.out.println( "Solved constraint: typeof(" + 
+                    /*System.out.println( "Solved constraint: typeof(" + 
                                         v1.scope.getScopeName() + "::" + v1.name + ") = typeof(" +
-                                        v2.scope.getScopeName() + "::" + v2.name + ") => both " + t1 ); 
+                                        v2.scope.getScopeName() + "::" + v2.name + ") => both " + t1 );*/ 
                     return true;
                 }
             }
@@ -279,7 +279,7 @@ callStmt returns [VarType type, List<SLTreeNode> vars]
     ;
 
 exprRoot returns [VarType type, List<SLTreeNode> vars]
-    @after { System.out.println( "typeof(" + $exprRoot.text + ") = " + $type ); }
+    @after { /*System.out.println( "typeof(" + $exprRoot.text + ") = " + $type );*/ }
 	:	^(EXPR expr)
         {
             $type = $EXPR.evalType = $expr.type;
@@ -288,7 +288,7 @@ exprRoot returns [VarType type, List<SLTreeNode> vars]
 	;
 
 boolExpr returns [VarType type, List<SLTreeNode> vars]
-    @after { System.out.println( "typeof(" + $boolExpr.text + ") = " + $type ); }
+    @after { /*System.out.println( "typeof(" + $boolExpr.text + ") = " + $type );*/ }
 	:	^(CMPOP e1=exprRoot e2=exprRoot)
         {
             $type = $CMPOP.evalType = VarType.BOOLEAN;
@@ -345,14 +345,14 @@ exitFunction
 
 atom returns [VarType type, List<SLTreeNode> vars]
     @init { $vars = new ArrayList(); }
-    @after { System.out.println( "Vars in " + $start.toStringTree() + ": " + $vars ); }
+    @after { /*System.out.println( "Vars in " + $start.toStringTree() + ": " + $vars );*/ }
 	:	INT 	{ $type = VarType.INT; }
 	|	FLOAT 	{ $type = VarType.FLOAT; }
 	|	STRING 	{ $type = VarType.STRING; }
 	|	WORDS	{ $type = VarType.STRING; }
 	|	ID		
 		{ 
-            System.out.println( "Found ID " + $ID.text );
+            //System.out.println( "Found ID " + $ID.text );
 			if ( $ID.symbol == null ) {
 				SymEntry s = $ID.scope.resolve( $ID.text, false );
 				if ( s == null ) {
@@ -373,10 +373,10 @@ atom returns [VarType type, List<SLTreeNode> vars]
 
 arrayRef returns [VarType type, List<SLTreeNode> vars]
 	@init { $vars = new ArrayList(); }
-	@after { System.out.println( "Vars in " + $start.toStringTree() + ": " + $vars ); }
+	@after { /*System.out.println( "Vars in " + $start.toStringTree() + ": " + $vars );*/ }
 	:	^(ARRAYREF atom ID)
 		{
-			System.out.println( "Found array ID " + $ID.text );
+			//System.out.println( "Found array ID " + $ID.text );
 			if ( $ID.symbol == null ) {
 				SymEntry s = $ID.scope.resolve( $ID.text, false );
 				if ( s == null ) {

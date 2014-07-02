@@ -52,7 +52,6 @@ tokens {
 @lexer::members {
 	String fixString( String str )
 	{
-		System.out.println("Fixing string: " + str );
 		String ret = str.replace( "\\", "\\\\" );
 		ret = '"' + ret + '"';
 		return ret;
@@ -337,12 +336,12 @@ callExpr
 	;
 
 functionDefBare 
-	:	FUNC_DEF ID NO_ARGS AS functionBody FUNC_END { System.out.println("Function " + $ID.text + "()"); }
+	:	FUNC_DEF ID NO_ARGS AS functionBody FUNC_END { /*System.out.println("Function " + $ID.text + "()");*/ }
 	->	^(FUNCTION ID functionBody)
 	;
 	
 functionDefArgs
-	:	FUNC_DEF ID WITH_ARGS argList AS functionBody FUNC_END { System.out.println("Function " + $ID.text + "(" + $argList.text + ")"); }
+	:	FUNC_DEF ID WITH_ARGS argList AS functionBody FUNC_END { /*System.out.println("Function " + $ID.text + "(" + $argList.text + ")");*/ }
 	->	^(FUNCTION ID argList functionBody)
 	;
 	
