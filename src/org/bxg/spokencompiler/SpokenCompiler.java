@@ -36,27 +36,31 @@ import javax.tools.ToolProvider;
 
 public class SpokenCompiler
 {
-	private StringTemplateGroup templates;
+	private CommonTreeNodeStream nodes;
+	private SymbolTable symTree;
+	
+	private String className;
 
-	public void compileFile( String fileName, String templateName ) throws CompileException, IOException
+	public String getClassName() {
+		return className;
+	}
+
+	private void setClassName(String className) {
+		this.className = className;
+	}
+
+	public void parseFile( String sourceFile ) throws CompileException, IOException
 	{
+		// Reset for re-parsing
+		nodes = null;
+		symTree = null;
+		
 		// Figure out file names
-		String inName = fileName;
-		String className = inName.replaceAll("(.*/)?([^/]+)\\.spk$","$2");
-		String jarName = inName.replaceAll( "\\.spk$", ".jar" );
-		String genJavaName = className + ".java";
-		String tmpPath = null;
-		File tmpDir = null;
-
-		// Read string templates
-		FileReader tr = new FileReader( templateName );
-	    templates = new StringTemplateGroup( tr );
-		tr.close();
+		setClassName( sourceFile.replaceAll("(.*/)?([^/]+)\\.spk$","$2") );
 
 		try {
 			// Parse input into AST
-			System.out.println( "-- Parsing input file " + inName + "  --");
-			ANTLRFileStream input = new ANTLRFileStream( inName );
+			ANTLRFileStream input = new ANTLRFileStream( sourceFile );
 			SpokenLangLexer lexer = new SpokenLangLexer( input );
 			CommonTokenStream tokens = new CommonTokenStream( lexer );
 			SpokenLangParser parser = new SpokenLangParser( tokens );
@@ -71,9 +75,9 @@ public class SpokenCompiler
 	
 			// Walk tree to do variable resolution
 			System.out.println( "-- Resolving symbol references --" );
-			CommonTreeNodeStream nodes = new CommonTreeNodeStream(treeAdaptor, t);
+			nodes = new CommonTreeNodeStream(treeAdaptor, t);
 			nodes.setTokenStream( tokens );
-			SymbolTable symTree = new SymbolTable( null, "global" );	// Global scope
+			symTree = new SymbolTable( null, "global" );	// Global scope
 			VarDef1 def = new VarDef1( nodes );		// Pass 1 - find vars and populate symbol table
 			def.currentScope = symTree;
 			def.downup(t);                          // Do pass 1
@@ -87,9 +91,22 @@ public class SpokenCompiler
 			ti.downup(t);
 			ti.processConstraints( true );  // process outstanding type constraints
 			//System.out.println( symTree.toStringNested(0) );
+		}
+		catch ( RecognitionException e ) {
+			throw new CompileException( e.getMessage() );
+		}
+	}
 	
-			System.out.println( "-- Generating code --" );
-			// Generate output into String variable
+	public String generateCode( String templateFile ) throws CompileException, IOException
+	{
+		// Read string templates
+		FileReader tr = new FileReader( templateFile );
+	    StringTemplateGroup templates = new StringTemplateGroup( tr );
+		tr.close();
+
+		// Generate output into String
+		String retVal = null;
+		try {
 			nodes.reset();
 			SLJavaEmitter emitter = new SLJavaEmitter( nodes );
 			emitter.setTemplateLib( templates );
@@ -97,23 +114,31 @@ public class SpokenCompiler
 			if ( emitter.getNumberOfSyntaxErrors() > 0 ) {
 				throw new CompileException("Error parsing AST");
 			}
-	
-			// Produce intermediate output into java file in a temporary directory
-			Path tmpDirPath = Files.createTempDirectory("spc");
-			tmpPath = tmpDirPath.toString() + File.separator + genJavaName;
-			tmpDir = tmpDirPath.toFile();
-			tmpDir.deleteOnExit();
+
 			StringTemplate output = (StringTemplate)strTmpl.getTemplate();
-			//System.out.println( output.toStructureString() );
-			FileWriter outFile = new FileWriter( tmpPath );
-			outFile.write( output.toString() );
-			outFile.close();
+			retVal = output.toString();
 		}
 		catch ( RecognitionException e ) {
 			throw new CompileException( e.getMessage() );
 		}
-
-		System.out.println( "-- Compiling " + genJavaName + " --" );
+		
+		return retVal;
+	}
+	
+	public void createJar( String javaCode, String jarName ) throws CompileException, IOException
+	{
+		// Produce intermediate output into java file in a temporary directory
+		String genJavaName = getClassName() + ".java";
+		Path tmpDirPath = Files.createTempDirectory("spc");
+		String tmpPath = tmpDirPath.toString() + File.separator + genJavaName;
+		File tmpDir = tmpDirPath.toFile();
+		tmpDir.deleteOnExit();
+		
+		//System.out.println( output.toStructureString() );
+		FileWriter outFile = new FileWriter( tmpPath );
+		outFile.write( javaCode );
+		outFile.close();
+		
 		// Run the Java compiler on the intermediate file
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 		int results = compiler.run( null, null, null, tmpPath );
@@ -140,8 +165,6 @@ public class SpokenCompiler
 		    classFile.delete();	// Clean up temporary files
 		}
 		jar.close();
-		
-		System.out.println( "-- Succeeded.  Output in " + jarName + " --" );		
 	}
 	
 	public static void main( String[] args ) throws Exception
@@ -149,7 +172,16 @@ public class SpokenCompiler
 		SpokenCompiler c = new SpokenCompiler();
 		for ( String fileArg: args ) {
 			try {
-				c.compileFile( fileArg, "bin/SLJavaEmitter.stg" );
+				System.out.println( "-- Parsing input file " + fileArg + "  --");
+				c.parseFile( fileArg );
+	
+				System.out.println( "-- Generating code --" );
+				String javaCode = c.generateCode( "bin/SLJavaEmitter.stg" );
+
+				System.out.println( "-- Compiling " + c.getClassName() + ".java --" );
+				String jarName = fileArg.replaceAll( "\\.spk$", ".jar" );
+				c.createJar( javaCode, jarName );
+				System.out.println( "-- Succeeded.  Output in " + c.getClassName() + ".jar --" );		
 			}
 			catch ( CompileException e ) {
 				System.err.println( "Error compiling " + fileArg + ": " + e.getMessage() );
