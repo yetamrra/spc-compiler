@@ -49,6 +49,38 @@ public class SpokenCompiler
 		this.className = className;
 	}
 
+	private PrintStream msgLog;
+
+	public PrintStream getMsgLog() {
+		return msgLog;
+	}
+
+	public void setMsgLog(PrintStream msgLog) {
+		this.msgLog = msgLog;
+	}
+
+	// OutputStream that discards all output.  Used so that
+	// the default log output can go nowhere.
+	private class NullOutputStream extends OutputStream
+	{
+		@Override
+		public void write(int b) throws IOException {}
+
+		@Override
+		public void write(byte[] b) throws IOException {}
+
+		@Override
+		public void write(byte[] b, int off, int len) throws IOException {}
+	}
+
+	public SpokenCompiler()
+	{
+		className = "";
+		nodes = null;
+		symTree = null;
+		msgLog = new PrintStream( new NullOutputStream() );
+	}
+
 	public void parseFile( String sourceFile ) throws CompileException, IOException
 	{
 		// Reset for re-parsing
@@ -71,10 +103,10 @@ public class SpokenCompiler
 				throw new CompileException("Error parsing input");
 			}
 			SLTreeNode t = (SLTreeNode)ast.getTree();
-			//System.out.println( "AST: " + t.toStringTree() );
+			//msgLog.println( "AST: " + t.toStringTree() );
 	
 			// Walk tree to do variable resolution
-			System.out.println( "-- Resolving symbol references --" );
+			msgLog.println( "-- Resolving symbol references --" );
 			nodes = new CommonTreeNodeStream(treeAdaptor, t);
 			nodes.setTokenStream( tokens );
 			symTree = new SymbolTable( null, "global" );	// Global scope
@@ -84,13 +116,13 @@ public class SpokenCompiler
 			nodes.reset(); // rewind AST node stream to root
 			//Ref ref = new Ref(nodes);               // Pass 2 - resolve references
 			//ref.downup(t);                          // Do pass 2
-			//System.out.println( symTree.toStringNested(0) );
+			//msgLog.println( symTree.toStringNested(0) );
 	
-			System.out.println( "-- Inferring types --" );
+			msgLog.println( "-- Inferring types --" );
 			TypeInf ti = new TypeInf(nodes);
 			ti.downup(t);
 			ti.processConstraints( true );  // process outstanding type constraints
-			//System.out.println( symTree.toStringNested(0) );
+			//msgLog.println( symTree.toStringNested(0) );
 		}
 		catch ( RecognitionException e ) {
 			throw new CompileException( e.getMessage() );
@@ -99,6 +131,10 @@ public class SpokenCompiler
 	
 	public String generateCode( String templateFile ) throws CompileException, IOException
 	{
+		if ( nodes == null || symTree == null ) {
+			throw new CompileException("You must call parseFile() before calling generateCode()");
+		}
+
 		// Read string templates
 		FileReader tr = new FileReader( templateFile );
 	    StringTemplateGroup templates = new StringTemplateGroup( tr );
@@ -134,7 +170,7 @@ public class SpokenCompiler
 		File tmpDir = tmpDirPath.toFile();
 		tmpDir.deleteOnExit();
 		
-		//System.out.println( output.toStructureString() );
+		//msgLog.println( output.toStructureString() );
 		FileWriter outFile = new FileWriter( tmpPath );
 		outFile.write( javaCode );
 		outFile.close();
@@ -170,18 +206,21 @@ public class SpokenCompiler
 	public static void main( String[] args ) throws Exception
 	{
 		SpokenCompiler c = new SpokenCompiler();
+		PrintStream msgLog = System.out;
+		c.setMsgLog(msgLog);
+
 		for ( String fileArg: args ) {
 			try {
-				System.out.println( "-- Parsing input file " + fileArg + "  --");
+				msgLog.println( "-- Parsing input file " + fileArg + "  --");
 				c.parseFile( fileArg );
 	
-				System.out.println( "-- Generating code --" );
+				msgLog.println( "-- Generating code --" );
 				String javaCode = c.generateCode( "bin/SLJavaEmitter.stg" );
 
-				System.out.println( "-- Compiling " + c.getClassName() + ".java --" );
+				msgLog.println( "-- Compiling " + c.getClassName() + ".java --" );
 				String jarName = fileArg.replaceAll( "\\.spk$", ".jar" );
 				c.createJar( javaCode, jarName );
-				System.out.println( "-- Succeeded.  Output in " + c.getClassName() + ".jar --" );		
+				msgLog.println( "-- Succeeded.  Output in " + c.getClassName() + ".jar --" );
 			}
 			catch ( CompileException e ) {
 				System.err.println( "Error compiling " + fileArg + ": " + e.getMessage() );
