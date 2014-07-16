@@ -136,8 +136,9 @@ public class SpokenCompiler
 		}
 
 		// Read string templates
-		FileReader tr = new FileReader( templateFile );
-	    StringTemplateGroup templates = new StringTemplateGroup( tr );
+		InputStream in = getClass().getResourceAsStream( templateFile );
+		InputStreamReader tr = new InputStreamReader(in);
+		StringTemplateGroup templates = new StringTemplateGroup( tr );
 		tr.close();
 
 		// Generate output into String
@@ -215,7 +216,7 @@ public class SpokenCompiler
 				c.parseFile( fileArg );
 	
 				msgLog.println( "-- Generating code --" );
-				String javaCode = c.generateCode( "bin/SLJavaEmitter.stg" );
+				String javaCode = c.generateCode( "/SLJavaEmitter.stg" );
 
 				msgLog.println( "-- Compiling " + c.getClassName() + ".java --" );
 				String jarName = fileArg.replaceAll( "\\.spk$", ".jar" );
