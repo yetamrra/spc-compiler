@@ -19,7 +19,7 @@
 
 package org.bxg.spokencompiler;
 
-class CompileException extends RuntimeException
+public class CompileException extends RuntimeException
 {
 	/**
 	 * 
