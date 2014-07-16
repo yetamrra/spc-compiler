@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: org.bxg.spokencompiler.SpokenCompiler
+Class-Path: antlr-3.5.2-complete.jar
+

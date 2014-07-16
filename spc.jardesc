@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jardesc>
+    <jar path="EclipsePlugin/lib/spc.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/grammar/spc.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="false" mainClassHandleIdentifier="=grammar/src&lt;org.bxg.spokencompiler{SpokenCompiler.java[SpokenCompiler" manifestLocation="/grammar/spc.manifest" manifestVersion="1.0" reuseManifest="true" saveManifest="true" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <javaElement handleIdentifier="=grammar/src&lt;org.bxg.spokencompiler{Scope.java"/>
+        <javaElement handleIdentifier="=grammar/src&lt;org.bxg.spokencompiler{TypeInf.java"/>
+        <javaElement handleIdentifier="=grammar/src&lt;org.bxg.spokencompiler{SLTreeAdaptor.java"/>
+        <file path="/grammar/src/org/bxg/spokencompiler/SpokenLang.g"/>
+        <javaElement handleIdentifier="=grammar/src&lt;org.bxg.spokencompiler{SpokenCompiler.java"/>
+        <javaElement handleIdentifier="=grammar/src&lt;org.bxg.spokencompiler{SLJavaEmitter.java"/>
+        <file path="/grammar/src/org/bxg/spokencompiler/TypeInf.g"/>
+        <javaElement handleIdentifier="=grammar/src&lt;org.bxg.spokencompiler{VarDef1.java"/>
+        <javaElement handleIdentifier="=grammar/src&lt;org.bxg.spokencompiler{CompileException.java"/>
+        <javaElement handleIdentifier="=grammar/src&lt;org.bxg.spokencompiler{FunctionSym.java"/>
+        <javaElement handleIdentifier="=grammar/src&lt;org.bxg.spokencompiler{VarConstraint.java"/>
+        <javaElement handleIdentifier="=grammar/src&lt;org.bxg.spokencompiler{SpokenLangParser.java"/>
+        <javaElement handleIdentifier="=grammar/src&lt;org.bxg.spokencompiler{SpokenLangLexer.java"/>
+        <file path="/grammar/src/org/bxg/spokencompiler/TypeInf.tokens"/>
+        <file path="/grammar/src/org/bxg/spokencompiler/VarDef1.g"/>
+        <file path="/grammar/src/org/bxg/spokencompiler/SLJavaEmitter.tokens"/>
+        <file path="/grammar/src/org/bxg/spokencompiler/VarDef1.tokens"/>
+        <file path="/grammar/src/org/bxg/spokencompiler/SpokenLang.tokens"/>
+        <javaElement handleIdentifier="=grammar/src&lt;org.bxg.spokencompiler{SLTreeNode.java"/>
+        <javaElement handleIdentifier="=grammar/src&lt;org.bxg.spokencompiler{SymbolTable.java"/>
+        <file path="/grammar/src/SLJavaEmitter.stg"/>
+        <javaElement handleIdentifier="=grammar/src&lt;org.bxg.spokencompiler{SymEntry.java"/>
+        <file path="/grammar/src/org/bxg/spokencompiler/SLJavaEmitter.g"/>
+        <javaElement handleIdentifier="=grammar/src&lt;org.bxg.spokencompiler{VarType.java"/>
+    </selectedElements>
+</jardesc>
