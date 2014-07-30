@@ -136,9 +136,12 @@ public class SpokenCompiler
 		}
 
 		// Read string templates
-		InputStream in = getClass().getResourceAsStream( templateFile );
+		InputStream in = getClass().getResourceAsStream(templateFile);
+		if ( in == null ) {
+			throw new CompileException("Unable to load template file " + templateFile);
+		}
 		InputStreamReader tr = new InputStreamReader(in);
-		StringTemplateGroup templates = new StringTemplateGroup( tr );
+		StringTemplateGroup templates = new StringTemplateGroup(tr);
 		tr.close();
 
 		// Generate output into String
