@@ -120,7 +120,7 @@ assignment
 				currentScope.define( var );
 			} else {
                 if ( var.varType == VarType.FUNCTION ) {
-                    throw new CompileException( "Attempted to assign a value to function " + $ID.text + " at line " + $ID.line );
+                    throw new CompileException( "Attempted to assign a value to function " + $ID.text, $ID.line );
                 }
             }
 			$ID.symbol = var;
@@ -135,7 +135,7 @@ assignment
 				currentScope.define( var );
 			} else {
                 if ( var.varType == VarType.FUNCTION ) {
-                    throw new CompileException( "Attempted to assign a value to function " + $arr.text + " at line " + $arr.line );
+                    throw new CompileException( "Attempted to assign a value to function " + $arr.text, $arr.line );
                 }
             }
 			$arr.symbol = var;
@@ -152,7 +152,7 @@ readStmt
 				currentScope.define( var );
 			} else {
                 if ( var.varType == VarType.FUNCTION ) {
-                    throw new CompileException( "Attempted to read a value into function " + $ID.text + " at line " + $ID.line );
+                    throw new CompileException( "Attempted to read a value into function " + $ID.text, $ID.line );
                 }
             }
 			$ID.symbol = var;
@@ -167,7 +167,7 @@ readStmt
 				currentScope.define( var );
 			} else {
                 if ( var.varType == VarType.FUNCTION ) {
-                    throw new CompileException( "Attempted to assign a value to function " + $arr.text + " at line " + $arr.line );
+                    throw new CompileException( "Attempted to assign a value to function " + $arr.text, $arr.line );
                 }
             }
 			$arr.symbol = var;
@@ -180,10 +180,10 @@ callStmt
 			SymEntry var = currentScope.resolve( $ID.text, false );
 			if ( var == null ) {
                 // This must be a forward reference.  Leave it alone for now.
-                //throw new CompileException( "Attempted to call undefined function " + $ID.text + " at line " + $ID.line );
+                //throw new CompileException( "Attempted to call undefined function " + $ID.text, $ID.line );
 			} else {
                 if ( var.varType != VarType.FUNCTION ) {
-                    throw new CompileException( "Attempted to use symbol " + $ID.text + " as a function at line " + $ID.line );
+                    throw new CompileException( "Attempted to use symbol " + $ID.text + " as a function", $ID.line );
                 } else {
 			        $ID.symbol = var;
                 }

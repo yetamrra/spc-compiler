@@ -125,7 +125,7 @@ public class SpokenCompiler
 			//msgLog.println( symTree.toStringNested(0) );
 		}
 		catch ( RecognitionException e ) {
-			throw new CompileException( e.getMessage() );
+			throw new CompileException( e.getMessage(), e.line );
 		}
 	}
 	
@@ -227,7 +227,7 @@ public class SpokenCompiler
 				msgLog.println( "-- Succeeded.  Output in " + c.getClassName() + ".jar --" );
 			}
 			catch ( CompileException e ) {
-				System.err.println( "Error compiling " + fileArg + ": " + e.getMessage() );
+				System.err.println( "Error compiling " + fileArg + ": " + e.getMessage() + " at line " + e.getLine() );
 				System.exit( 1 );
 			}
 			catch ( IOException e ) {

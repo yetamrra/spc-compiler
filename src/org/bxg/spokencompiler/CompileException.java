@@ -21,6 +21,8 @@ package org.bxg.spokencompiler;
 
 public class CompileException extends RuntimeException
 {
+	private int line = 0;
+
 	/**
 	 * 
 	 */
@@ -29,5 +31,16 @@ public class CompileException extends RuntimeException
 	public CompileException( String message )
 	{
 		super( message );
+	}
+
+	public CompileException( String message, int line )
+	{
+		super( message );
+		this.line = line;
+	}
+
+	public int getLine()
+	{
+		return line;
 	}
 };

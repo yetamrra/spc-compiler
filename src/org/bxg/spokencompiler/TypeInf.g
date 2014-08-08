@@ -46,7 +46,7 @@ options {
         } else {
             // The LHS has a known type, so make sure they match
             if ( matchType != VarType.UNKNOWN && knownType != matchType ) {
-                throw new CompileException( "Incompatible types " + knownType + " and " + matchType + " for " + node.getText() + " at line " + node.getLine() );
+                throw new CompileException( "Incompatible types " + knownType + " and " + matchType + " for " + node.getText(), node.getLine() );
             } else {
                 return knownType;
             }
@@ -56,7 +56,7 @@ options {
     void constrainType( SLTreeNode node, VarType vType, boolean isArray )
     {
         if ( node.symbol == null ) {
-            throw new CompileException( "Unresolved variable " + node.getText() + " at line " + node.getLine() );
+            throw new CompileException( "Unresolved variable " + node.getText(), node.getLine() );
         } else if ( vType == VarType.UNKNOWN || vType == null ) {
             return;
         } else if ( node.symbol.varType == VarType.FUNCTION ) {
@@ -78,9 +78,9 @@ options {
                 // FIXME: figure out how to handle this properly
                 /*
                 if ( s.isArray && !isArray ) {
-					throw new CompileException( "Attempting to assign scalar to array `" + node.getText() + "` at line " + node.getLine() );
+					throw new CompileException( "Attempting to assign scalar to array `" + node.getText() + "`", node.getLine() );
 				} else if ( !s.isArray && isArray ) {
-					throw new CompileException( "Attempting to assign array to scalar `" + node.getText() + "` at line " + node.getLine() );
+					throw new CompileException( "Attempting to assign array to scalar `" + node.getText() + "`", node.getLine() );
 				}*/
                 //System.out.println( "Constraint: typeof(" + node.getText() + ") = " + vType );
                 // FIXME: add constraint
@@ -172,7 +172,7 @@ options {
                 return true;
             } else {
                 if ( t1 != t2 ) {
-                    throw new CompileException( "Types of " + v1 + " and " + v2 + " are not compatible." );
+                    throw new CompileException( "Types of " + v1 + " and " + v2 + " are not compatible.", v2.definition.getLine() );
                 } else {
                     /*System.out.println( "Solved constraint: typeof(" + 
                                         v1.scope.getScopeName() + "::" + v1.name + ") = typeof(" +
@@ -198,7 +198,7 @@ options {
             // if it was a forward reference.
             SymEntry var = currentFunction.scope.resolve( node.getText(), false );
             if ( var == null ) {
-                throw new CompileException( "Unresolved function " + node.getText() + " at line " + node.getLine() );
+                throw new CompileException( "Unresolved function " + node.getText(), node.getLine() );
             } else {
                 node.symbol = var;
             }
@@ -207,7 +207,7 @@ options {
         if ( node.symbol.varType == VarType.FUNCTION ) {
         	return (FunctionSym)node.symbol;
         } else {
-        	throw new CompileException( "Can't call non-function symbol " + node.getText() + " at line " + node.getLine() );
+        	throw new CompileException( "Can't call non-function symbol " + node.getText(), node.getLine() );
         }
     }
     
@@ -266,7 +266,7 @@ callStmt returns [VarType type, List<SLTreeNode> vars]
             if ( $args != null && $args.size() > 0 ) {
 	            FunctionSym fun = getFunction( $ID );
 	            if ( $args.size() != fun.arguments.size() ) {
-	            	throw new CompileException( "Called function " + $ID.text + " with " + $args.size() + " arguments when " + fun.arguments.size() + " are needed at line " + $ID.line );
+	            	throw new CompileException( "Called function " + $ID.text + " with " + $args.size() + " arguments when " + fun.arguments.size() + " are needed", $ID.line );
 	            }
 	            
 	            for ( int i=0; i<$args.size(); i++ ) {
@@ -324,7 +324,7 @@ enterFunction
         {
             currentFunction = $ID;
             if ( currentFunction.symbol == null ) {
-                throw new CompileException( "Unresolved function " + $ID.text + " entered at line " + $ID.line );
+                throw new CompileException( "Unresolved function " + $ID.text + " entered", $ID.line );
             }
         }
     ;
@@ -356,7 +356,7 @@ atom returns [VarType type, List<SLTreeNode> vars]
 			if ( $ID.symbol == null ) {
 				SymEntry s = $ID.scope.resolve( $ID.text, false );
 				if ( s == null ) {
-					throw new CompileException( "Unresolved symbol `" + $ID.text + "` encountered at line " + $ID.line );
+					throw new CompileException( "Unresolved symbol `" + $ID.text + "` encountered", $ID.line );
 				}
 				$ID.symbol = s;
 			}
@@ -380,7 +380,7 @@ arrayRef returns [VarType type, List<SLTreeNode> vars]
 			if ( $ID.symbol == null ) {
 				SymEntry s = $ID.scope.resolve( $ID.text, false );
 				if ( s == null ) {
-					throw new CompileException( "Unresolved array `" + $ID.text + "` encountered at line " + $ID.line );
+					throw new CompileException( "Unresolved array `" + $ID.text + "` encountered", $ID.line );
 				}
 				$ID.symbol = s;
 				s.isArray = true;
