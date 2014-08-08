@@ -125,6 +125,7 @@ public class SpokenCompiler
 			//msgLog.println( symTree.toStringNested(0) );
 		}
 		catch ( RecognitionException e ) {
+		    System.out.println(e);
 			throw new CompileException( e.getMessage(), e.line );
 		}
 	}
@@ -159,7 +160,7 @@ public class SpokenCompiler
 			retVal = output.toString();
 		}
 		catch ( RecognitionException e ) {
-			throw new CompileException( e.getMessage() );
+			throw new CompileException( e.getMessage(), e.line );
 		}
 		
 		return retVal;

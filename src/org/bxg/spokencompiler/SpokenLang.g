@@ -56,10 +56,24 @@ tokens {
 		ret = '"' + ret + '"';
 		return ret;
 	}
+
+	@Override
+    public void displayRecognitionError(String[] tokenNames, RecognitionException e) {
+        String hdr = getErrorHeader(e);
+        String msg = getErrorMessage(e, tokenNames);
+        throw new CompileException(hdr + ":" + msg, e.line);
+    }
 }
 
-@members {
+@parser::members {
 	Scope currentScope;
+
+	@Override
+    public void displayRecognitionError(String[] tokenNames, RecognitionException e) {
+        String hdr = getErrorHeader(e);
+        String msg = getErrorMessage(e, tokenNames);
+        throw new CompileException(hdr + ":" + msg, e.line);
+    }
 }
 
 IF : 'if' ;
